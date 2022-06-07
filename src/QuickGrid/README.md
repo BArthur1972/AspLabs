@@ -3,7 +3,7 @@
 QuickGrid is a simple and fast data grid for Blazor, with:
 
  * **A clean and comfortable Blazor-native API**, with extensibility for custom filtering, sorting, etc.
- * **Strong performance** when rendering large amounts of data in any Blazor hosting environment (Server, WebAssembly, MAUI).
+ * **Strong performance** when rendering large amounts of data in any Blazor hosting environment (Server, WebAssembly, .NET MAUI).
 
 It is not intended to replace more full-featured data grids, such as those from commercial component vendors.
 
