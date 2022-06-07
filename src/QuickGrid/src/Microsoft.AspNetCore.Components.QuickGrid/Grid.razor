@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.AspNetCore.Components.Rendering
 @using System.Linq.Expressions
 @typeparam TGridItem
 @attribute [CascadingTypeParameter(nameof(TGridItem))]
@@ -70,7 +70,7 @@
     {
         if (firstRender)
         {
-            _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/QuickGrid/Grid.razor.js");
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Microsoft.AspNetCore.Components.QuickGrid/Grid.razor.js");
             _jsEventDisposable = await _jsModule.InvokeAsync<IJSObjectReference>("init", _tableReference);
         }
 
