@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace QuickGrid.Infrastructure;
+namespace Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 
 public abstract class ColumnBase<TGridItem> : ComponentBase
 {

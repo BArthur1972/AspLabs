@@ -2,7 +2,7 @@
 using QuickGrid.Infrastructure;
 using System.Linq.Expressions;
 
-namespace QuickGrid;
+namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
 {

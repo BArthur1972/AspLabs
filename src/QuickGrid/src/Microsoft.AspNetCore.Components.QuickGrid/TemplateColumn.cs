@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using QuickGrid.Infrastructure;
 
-namespace QuickGrid;
+namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public class TemplateColumn<TGridItem> : ColumnBase<TGridItem>
 {

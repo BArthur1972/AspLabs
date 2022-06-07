@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace QuickGrid;
+namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public static class GridSortExtensions
 {
