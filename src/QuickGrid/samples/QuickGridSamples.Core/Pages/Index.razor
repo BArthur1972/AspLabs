@@ -5,18 +5,18 @@
 
 <h1>Hello, world!</h1>
 
-<Grid Items="@forecasts.AsQueryable()">
+<QuickGrid Items="@forecasts">
     <PropertyColumn Property="x => x.Date" />
     <PropertyColumn Property="x => x.TemperatureC" Title="Temperature (C)" Align="Align.Right" />
     <PropertyColumn Property="x => (x.TemperatureC * 1.8) + 32" Format="N0" Title="Temperature (F)" Align="Align.Right" />
-</Grid>
+</QuickGrid>
 
 @code {
-    WeatherForecast[] forecasts = new WeatherForecast[]
+    IQueryable<WeatherForecast> forecasts = new WeatherForecast[]
     {
         new WeatherForecast { Date = DateTime.Now.Date, TemperatureC = 23 },
         new WeatherForecast { Date = DateTime.Now.Date.AddDays(1), TemperatureC = 28 },
-    };
+    }.AsQueryable();
 
     class WeatherForecast
     {

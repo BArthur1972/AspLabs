@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 

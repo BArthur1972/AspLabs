@@ -7,7 +7,7 @@ public abstract class ColumnBase<TGridItem> : ComponentBase
 {
     private readonly static RenderFragment<TGridItem> EmptyChildContent = _ => builder => { };
 
-    [CascadingParameter] internal Grid<TGridItem>.AddColumnCallback AddColumn { get; set; } = default!;
+    [CascadingParameter] internal QuickGrid<TGridItem>.AddColumnCallback AddColumn { get; set; } = default!;
 
     [Parameter] public string? Title { get; set; }
     [Parameter] public string? Class { get; set; }
