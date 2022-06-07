@@ -31,7 +31,7 @@ app.Map("/webassembly", app =>
 {
     app.UseBlazorFrameworkFiles();
     app.UseStaticFiles();
-    app.UseEndpoints(e => e.MapFallbackToFile("webassembly/{*path:nonfile}", "index.html"));
+    app.UseEndpoints(e => e.MapFallbackToPage("webassembly/{*path:nonfile}", "/_WebAssemblyHost"));
 });
 
 // This is a temporary workaround needed until the next patch release of ASP.NET Core
@@ -55,7 +55,7 @@ app.Map("/server", app =>
 {
     app.UseStaticFiles();
     app.UseEndpoints(endpoints => endpoints.MapBlazorHub("/server/_blazor"));
-    app.UseEndpoints(e => e.MapFallbackToPage("server/{*path:nonfile}", "/_Host"));
+    app.UseEndpoints(e => e.MapFallbackToPage("server/{*path:nonfile}", "/_ServerHost"));
 });
 
 app.Run();
