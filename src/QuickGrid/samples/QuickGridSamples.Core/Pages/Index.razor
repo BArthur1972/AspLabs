@@ -6,7 +6,11 @@
 <h1>Hello, world!</h1>
 
 <QuickGrid Items="@forecasts">
-    <PropertyColumn Property="x => x.Date" />
+    <PropertyColumn Property="x => x.Date">
+        <ColumnOptions>
+            Hello
+        </ColumnOptions>
+    </PropertyColumn>
     <PropertyColumn Property="x => x.TemperatureC" Title="Temperature (C)" Align="Align.Right" />
     <PropertyColumn Property="x => (x.TemperatureC * 1.8) + 32" Format="N0" Title="Temperature (F)" Align="Align.Right" />
 </QuickGrid>

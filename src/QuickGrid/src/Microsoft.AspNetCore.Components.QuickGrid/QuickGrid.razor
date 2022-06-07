@@ -129,8 +129,8 @@
                 @if (col.CanSort)
                 {
                     <button class="column-title sortable" @onclick="@(() => OnHeaderClicked(col))">
-                        <span class="sort-indicator" aria-hidden="true"></span>
                         <div class="title-text">@col.HeaderContent</div>
+                        <span class="sort-indicator" aria-hidden="true"></span>
                     </button>
                 }
                 else
