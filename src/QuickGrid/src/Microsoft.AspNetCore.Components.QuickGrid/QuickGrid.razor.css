@@ -67,7 +67,7 @@ th.sorted-asc:focus-within .column-title-flex, th.sorted-desc:focus-within .colu
     filter: brightness(0.85);
 }
 
-.sort-indicator {
+::deep .sort-indicator {
     width: 1.5rem;
     height: 1rem;
     opacity: 0.4;
@@ -78,17 +78,17 @@ th.sorted-asc:focus-within .column-title-flex, th.sorted-desc:focus-within .colu
     align-items: center;
 }
 
-.sorted-asc .sort-indicator, .sorted-desc .sort-indicator {
+.sorted-asc ::deep .sort-indicator, .sorted-desc ::deep .sort-indicator {
     background: none;
     opacity: 0.6;
     margin-top: -0.6rem;
 }
 
-.sorted-asc .sort-indicator:before {
+.sorted-asc ::deep .sort-indicator:before {
     content: '\25b2';
 }
 
-.sorted-desc .sort-indicator:before {
+.sorted-desc ::deep .sort-indicator:before {
     content: '\25bc';
 }
 

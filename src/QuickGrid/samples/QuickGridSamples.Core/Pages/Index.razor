@@ -10,8 +10,17 @@
         <ColumnOptions>
             Hello
         </ColumnOptions>
+        <HeaderTemplate Context="col">
+            Date
+            <button @onclick="@(() => col.Grid.ShowColumnOptions(col))">Info</button>
+        </HeaderTemplate>
     </PropertyColumn>
-    <PropertyColumn Property="x => x.TemperatureC" Title="Temperature (C)" Align="Align.Right" />
+    <PropertyColumn Property="x => x.TemperatureC" Align="Align.Right">
+        <HeaderTemplate Context="col">
+            <span @onclick="@(() => col.Grid.SortByColumnAsync(col))">Temperature (C)</span>
+            <span class="sort-indicator" aria-hidden="true"></span>
+        </HeaderTemplate>
+    </PropertyColumn>
     <PropertyColumn Property="x => (x.TemperatureC * 1.8) + 32" Format="N0" Title="Temperature (F)" Align="Align.Right" />
 </QuickGrid>
 

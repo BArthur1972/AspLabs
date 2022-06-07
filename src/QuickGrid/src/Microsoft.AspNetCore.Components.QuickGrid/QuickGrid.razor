@@ -7,7 +7,7 @@
 @{
     _columns.Clear();
 }
-<CascadingValue IsFixed="true" Value="@_addColumnCallback">
+<CascadingValue IsFixed="true" Value="@_internalGridContext">
     @ChildContent
     <Defer>
         <table aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
@@ -20,10 +20,10 @@
                 @if (Virtualize)
                 {
                     <Virtualize @ref="@_virtualizeComponent"
-                        TItem="(int RowIndex, TGridItem Data)"
-                        ItemSize="@ItemSize"
-                        ItemsProvider="@ProvideVirtualizedItems"
-                        ItemContent="@(item => builder => RenderRow(builder, item.RowIndex, item.Data))" />
+                            TItem="(int RowIndex, TGridItem Data)"
+                            ItemSize="@ItemSize"
+                            ItemsProvider="@ProvideVirtualizedItems"
+                            ItemContent="@(item => builder => RenderRow(builder, item.RowIndex, item.Data))" />
                 }
                 else
                 {
@@ -35,8 +35,6 @@
 </CascadingValue>
 
 @code {
-    internal delegate void AddColumnCallback(ColumnBase<TGridItem> column);
-
     [Parameter, EditorRequired] public IQueryable<TGridItem>? Items { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool Virtualize { get; set; }
@@ -46,7 +44,6 @@
 
     private Virtualize<(int, TGridItem)>? _virtualizeComponent;
     private List<ColumnBase<TGridItem>> _columns;
-    private AddColumnCallback _addColumnCallback;
     private ColumnBase<TGridItem>? _sortByColumn;
     private ColumnBase<TGridItem>? _displayOptionsForColumn;
     private bool _checkColumnOptionsPosition;
@@ -56,6 +53,7 @@
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
+    private InternalGridContext<TGridItem> _internalGridContext;
 
     private IQueryable<TGridItem>? SortedItems
         => _sortByColumn is null || Items is null ? Items : _sortByColumn.GetSortedItems(Items, _sortByAscending);
@@ -63,7 +61,13 @@
     public QuickGrid()
     {
         _columns = new();
-        _addColumnCallback = _columns.Add;
+        _internalGridContext = new(this);
+    }
+
+    // Invoked by descendant columns at a special time during rendering
+    internal void AddColumn(ColumnBase<TGridItem> column)
+    {
+        _columns.Add(column);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -125,26 +129,33 @@
     private void RenderColumnHeader(RenderTreeBuilder __builder, ColumnBase<TGridItem> col)
     {
         <th class="@ColumnHeaderClass(col)" aria-sort="@AriaSortValue(col)" @key="@col" scope="col">
-            <div class="column-title-flex">
-                @if (col.CanSort)
-                {
-                    <button class="column-title sortable" @onclick="@(() => OnHeaderClicked(col))">
-                        <div class="title-text">@col.HeaderContent</div>
-                        <span class="sort-indicator" aria-hidden="true"></span>
-                    </button>
-                }
-                else
-                {
-                    <div class="column-title">
-                        <div class="title-text">@col.HeaderContent</div>
-                    </div>
-                }
+            @if (col.HeaderTemplate is RenderFragment<ColumnBase<TGridItem>> headerTemplate)
+            {
+                @headerTemplate(col)
+            }
+            else
+            {
+                <div class="column-title-flex">
+                    @if (col.CanSort)
+                    {
+                        <button class="column-title sortable" @onclick="@(() => SortByColumnAsync(col))">
+                            <div class="title-text">@col.HeaderContent</div>
+                            <span class="sort-indicator" aria-hidden="true"></span>
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="column-title">
+                            <div class="title-text">@col.HeaderContent</div>
+                        </div>
+                    }
 
-                @if (col.ColumnOptions is not null)
-                {
-                    <button class="column-options-button" @onclick="@(() => OnColumnOptionsButtonClicked(col))"></button>
-                }
-            </div>
+                    @if (col.ColumnOptions is not null)
+                    {
+                        <button class="column-options-button" @onclick="@(() => ShowColumnOptions(col))"></button>
+                    }
+                </div>
+            }
 
             @if (col == _displayOptionsForColumn)
             {
@@ -180,19 +191,18 @@
         }
     }
 
-    private async Task OnHeaderClicked(ColumnBase<TGridItem> column)
+    public async Task SortByColumnAsync(ColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
     {
         if (column.CanSort)
         {
-            if (_sortByColumn == column)
+            _sortByAscending = direction switch
             {
-                _sortByAscending = !_sortByAscending;
-            }
-            else
-            {
-                _sortByAscending = true;
-                _sortByColumn = column;
-            }
+                SortDirection.Ascending => true,
+                SortDirection.Descending => false,
+                SortDirection.Auto => _sortByColumn == column ? !_sortByAscending : true
+            };
+
+            _sortByColumn = column;
 
             if (_virtualizeComponent is not null)
             {
@@ -201,7 +211,7 @@
         }
     }
 
-    private void OnColumnOptionsButtonClicked(ColumnBase<TGridItem> column)
+    public void ShowColumnOptions(ColumnBase<TGridItem> column)
     {
         _displayOptionsForColumn = column;
         _checkColumnOptionsPosition = true;
