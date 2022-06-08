@@ -16,11 +16,14 @@
         </HeaderTemplate>
     </PropertyColumn>
     <PropertyColumn Property="x => x.TemperatureC" Align="Align.Left" />
-    <PropertyColumn Property="x => (x.TemperatureC * 1.8) + 32" Format="N0" Title="Temperature (F)" Align="Align.Right">
+    <TemplateColumn Title="Temperature (F)" Align="Align.Right" SortBy="@(x => x.SortByAscending(y => y.TemperatureC))">
         <ColumnOptions>
             Hello
         </ColumnOptions>
-    </PropertyColumn>
+        <ChildContent>
+            @(((context.TemperatureC * 1.8) + 32).ToString("N0"))
+        </ChildContent>
+    </TemplateColumn>
 </QuickGrid>
 
 @code {

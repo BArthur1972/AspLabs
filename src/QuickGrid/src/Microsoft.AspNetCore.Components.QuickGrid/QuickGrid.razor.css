@@ -14,13 +14,6 @@ th {
     position: relative;
 }
 
-.title-text {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    font-weight: bold;
-}
-
 ::deep .sort-indicator {
     width: 1.5rem;
     height: 1rem;
