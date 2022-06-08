@@ -53,7 +53,7 @@
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
 
-    private IQueryable<TGridItem>? SortedItems
+    private IQueryable<TGridItem>? GetSortedItems()
         => _sortByColumn is null || Items is null ? Items : _sortByColumn.GetSortedItems(Items, _sortByAscending);
 
     public QuickGrid()
@@ -100,7 +100,7 @@
     private void RenderRows(RenderTreeBuilder builder)
     {
         var rowIndex = 2; // aria-rowindex is 1-based, plus the first row is the header
-        foreach (var item in SortedItems ?? Enumerable.Empty<TGridItem>())
+        foreach (var item in GetSortedItems() ?? Enumerable.Empty<TGridItem>())
         {
             RenderRow(builder, rowIndex++, item);
         }
@@ -201,7 +201,7 @@
                 return default;
             }
 
-            var records = SortedItems!.Skip(request.StartIndex).Take(request.Count).AsEnumerable();
+            var records = GetSortedItems()!.Skip(request.StartIndex).Take(request.Count).AsEnumerable();
             var result = new ItemsProviderResult<(int, TGridItem)>(
                 items: records.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
                 totalItemCount: Items.Count());
