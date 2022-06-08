@@ -1,0 +1,62 @@
+@using Microsoft.AspNetCore.Components.Rendering
+@typeparam TGridItem
+@{
+    InternalGridContext.Grid.AddColumn(this);
+}
+@code
+{
+    private readonly static RenderFragment<TGridItem> EmptyChildContent = _ => builder => { };
+
+    [CascadingParameter] internal InternalGridContext<TGridItem> InternalGridContext { get; set; } = default!;
+
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public Align Align { get; set; }
+    [Parameter] public RenderFragment<ColumnBase<TGridItem>>? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? ColumnOptions { get; set; }
+
+    protected internal RenderFragment<TGridItem> CellContent { get; protected set; } = EmptyChildContent;
+    protected internal RenderFragment HeaderContent { get; protected set; }
+
+    public ColumnBase()
+    {
+        HeaderContent = DefaultHeaderContent;
+    }
+
+    public QuickGrid<TGridItem> Grid => InternalGridContext.Grid;
+
+    protected virtual bool CanSort => false;
+
+    internal virtual IQueryable<TGridItem> GetSortedItems(IQueryable<TGridItem> source, bool ascending) => source;
+
+    private void DefaultHeaderContent(RenderTreeBuilder __builder)
+    {
+        @if (HeaderTemplate is RenderFragment<ColumnBase<TGridItem>> headerTemplate)
+        {
+            @headerTemplate(this)
+        }
+        else
+        {
+            <div class="column-title-flex">
+                @if (CanSort)
+                {
+                    <button class="column-title sortable" @onclick="@(() => Grid.SortByColumnAsync(this))">
+                        <div class="title-text">@Title</div>
+                        <span class="sort-indicator" aria-hidden="true"></span>
+                    </button>
+                }
+                else
+                {
+                    <div class="column-title">
+                        <div class="title-text">@Title</div>
+                    </div>
+                }
+
+                @if (ColumnOptions is not null)
+                {
+                    <button class="column-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
+                }
+            </div>
+        }
+    }
+}

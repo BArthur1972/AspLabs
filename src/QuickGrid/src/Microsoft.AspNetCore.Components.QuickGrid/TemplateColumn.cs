@@ -15,7 +15,7 @@ public class TemplateColumn<TGridItem> : ColumnBase<TGridItem>
         CellContent = ChildContent;
     }
 
-    internal override bool CanSort => SortBy != null;
+    protected override bool CanSort => SortBy != null;
 
     internal override IQueryable<TGridItem> GetSortedItems(IQueryable<TGridItem> source, bool ascending)
         => SortBy == null ? source : SortBy(source).Apply(source, ascending);

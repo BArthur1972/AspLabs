@@ -59,7 +59,7 @@ public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
         }
     }
 
-    internal override bool CanSort => true;
+    protected override bool CanSort => true;
 
     internal override IQueryable<TGridItem> GetSortedItems(IQueryable<TGridItem> source, bool ascending)
         => ascending ? source.OrderBy(Property) : source.OrderByDescending(Property);

@@ -116,57 +116,26 @@
         </tr>
     }
 
-    private void RenderColumnHeaders(RenderTreeBuilder builder)
+    private void RenderColumnHeaders(RenderTreeBuilder __builder)
     {
         foreach (var col in _columns)
         {
-            RenderColumnHeader(builder, col);
+            <th class="@ColumnHeaderClass(col)" aria-sort="@AriaSortValue(col)" @key="@col" scope="col">
+                @col.HeaderContent
+
+                @if (col == _displayOptionsForColumn)
+                {
+                    <div class="column-options">
+                        @col.ColumnOptions
+                    </div>
+                }
+
+                @if (ResizableColumns)
+                {
+                    <div class="column-width-draghandle"></div>
+                }
+            </th>
         }
-    }
-
-    private void RenderColumnHeader(RenderTreeBuilder __builder, ColumnBase<TGridItem> col)
-    {
-        <th class="@ColumnHeaderClass(col)" aria-sort="@AriaSortValue(col)" @key="@col" scope="col">
-            @if (col.HeaderTemplate is RenderFragment<ColumnBase<TGridItem>> headerTemplate)
-            {
-                @headerTemplate(col)
-            }
-            else
-            {
-                <div class="column-title-flex">
-                    @if (col.CanSort)
-                    {
-                        <button class="column-title sortable" @onclick="@(() => SortByColumnAsync(col))">
-                            <div class="title-text">@col.HeaderContent</div>
-                            <span class="sort-indicator" aria-hidden="true"></span>
-                        </button>
-                    }
-                    else
-                    {
-                        <div class="column-title">
-                            <div class="title-text">@col.HeaderContent</div>
-                        </div>
-                    }
-
-                    @if (col.ColumnOptions is not null)
-                    {
-                        <button class="column-options-button" @onclick="@(() => ShowColumnOptions(col))"></button>
-                    }
-                </div>
-            }
-
-            @if (col == _displayOptionsForColumn)
-            {
-                <div class="column-options">
-                    @col.ColumnOptions
-                </div>
-            }
-
-            @if (ResizableColumns)
-            {
-                <div class="column-width-draghandle"></div>
-            }
-        </th>
     }
 
     private string AriaSortValue(ColumnBase<TGridItem> column)
@@ -191,25 +160,22 @@
 
     public async Task SortByColumnAsync(ColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
     {
-        if (column.CanSort)
+        _sortByAscending = direction switch
         {
-            _sortByAscending = direction switch
-            {
-                SortDirection.Ascending => true,
-                SortDirection.Descending => false,
-                SortDirection.Auto => _sortByColumn == column ? !_sortByAscending : true,
-                _ => throw new NotSupportedException($"Unknown sort direction { direction }"),
-            };
+            SortDirection.Ascending => true,
+            SortDirection.Descending => false,
+            SortDirection.Auto => _sortByColumn == column ? !_sortByAscending : true,
+            _ => throw new NotSupportedException($"Unknown sort direction { direction }"),
+        };
 
-            _sortByColumn = column;
+        _sortByColumn = column;
 
-            if (_virtualizeComponent is not null)
-            {
-                await _virtualizeComponent.RefreshDataAsync();
-            }
-
-            StateHasChanged();
+        if (_virtualizeComponent is not null)
+        {
+            await _virtualizeComponent.RefreshDataAsync();
         }
+
+        StateHasChanged();
     }
 
     public void ShowColumnOptions(ColumnBase<TGridItem> column)
