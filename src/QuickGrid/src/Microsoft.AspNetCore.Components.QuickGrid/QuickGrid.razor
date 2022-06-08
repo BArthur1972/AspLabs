@@ -4,10 +4,8 @@
 @attribute [CascadingTypeParameter(nameof(TGridItem))]
 @inject IJSRuntime JS
 @implements IAsyncDisposable
-@{
-    _columns.Clear();
-}
 <CascadingValue IsFixed="true" Value="@_internalGridContext">
+    @{ _columns.Clear(); }
     @ChildContent
     <Defer>
         <table aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
@@ -199,7 +197,8 @@
             {
                 SortDirection.Ascending => true,
                 SortDirection.Descending => false,
-                SortDirection.Auto => _sortByColumn == column ? !_sortByAscending : true
+                SortDirection.Auto => _sortByColumn == column ? !_sortByAscending : true,
+                _ => throw new NotSupportedException($"Unknown sort direction { direction }"),
             };
 
             _sortByColumn = column;
@@ -208,6 +207,8 @@
             {
                 await _virtualizeComponent.RefreshDataAsync();
             }
+
+            StateHasChanged();
         }
     }
 
@@ -215,6 +216,7 @@
     {
         _displayOptionsForColumn = column;
         _checkColumnOptionsPosition = true;
+        StateHasChanged();
     }
 
     private async ValueTask<ItemsProviderResult<(int, TGridItem)>> ProvideVirtualizedItems(ItemsProviderRequest request)
