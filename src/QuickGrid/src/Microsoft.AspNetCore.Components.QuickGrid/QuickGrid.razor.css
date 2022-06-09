@@ -45,34 +45,23 @@ th ::deep .col-options-button {
 }
 
 .column-width-draghandle {
-    /*
-        Absolutely positioned so it can be dragged.
-        This also means it doesn't consume any horizontal space, so it's up to the developer to ensure it's positioned
-        over some whitespace. The default positioning puts the center line directly over the right-hand-edge of the
-        column. Developers can use "transform: translateX(...)" to move it further right if there's a gap between the
-        columns.
-    */
-    position: absolute;
     width: 1rem;
-    top: 0; bottom: 0; right: -0.5rem;
+}
+
+th.column-width-draghandle {
     cursor: ew-resize;
 }
 
-.column-width-draghandle:after {
+th.column-width-draghandle:after {
     content: ' ';
     border-left: 1px solid silver;
-    position: absolute; top: 5px; bottom: 5px; left: 0.5rem;
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 0.5rem;
 }
 
-.column-width-draghandle:hover {
-    background: gray;
-}
-
-.column-width-draghandle:hover:after {
-    border-color: white;
-}
-
-th:last-of-type .column-width-draghandle {
+th:last-of-type.column-width-draghandle, td:last-of-type.column-width-draghandle {
     display: none;
 }
 

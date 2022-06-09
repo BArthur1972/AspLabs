@@ -11,11 +11,6 @@
         <ColumnOptions>
             Hello
         </ColumnOptions>
-        <HeaderTemplate Context="col">
-            Date
-            <button @onclick="@(() => col.Grid.ShowColumnOptions(col))">Info</button>
-            <button class="col-options-button" @onclick="@(() => col.Grid.ShowColumnOptions(col))"></button>
-        </HeaderTemplate>
     </PropertyColumn>
     <PropertyColumn Property="x => x.TemperatureC" Align="Align.Left" Sortable="true" />
     <TemplateColumn Title="Temperature (F)" Align="Align.Right" SortBy="@(x => x.SortByAscending(y => y.TemperatureC))">

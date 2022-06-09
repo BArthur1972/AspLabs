@@ -1,3 +1,28 @@
-.quickgrid[theme=default] {
-    color: red !important;
+.quickgrid[theme=default] th:first-of-type .col-title-text, .quickgrid[theme=default] > tbody > tr > td:first-of-type {
+    padding-left: 3px;
+    padding-right: 3px;
 }
+
+.quickgrid[theme=default] .col-title {
+    gap: 0.5rem; /* Separate the sort indicator from title text */
+}
+
+.quickgrid[theme=default] .sort-indicator {
+    opacity: 0.5;
+}
+
+.quickgrid[theme=default] button.col-title:hover, .quickgrid[theme=default] .col-options-button:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+.quickgrid[theme=default] button.col-title:active, .quickgrid[theme=default] .col-options-button:active {
+    background-color: rgba(128, 128, 128, 0.5);
+}
+
+.quickgrid[theme=default] th.column-width-draghandle:hover {
+    background: rgba(128, 128, 128, 0.2);
+}
+
+    .quickgrid[theme=default] th.column-width-draghandle:hover:after {
+        border-color: black;
+    }

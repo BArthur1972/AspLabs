@@ -114,6 +114,10 @@
             @foreach (var col in _columns)
             {
                 <td class="@ColumnClass(col)" @key="@col">@{ col.CellContent(__builder, item); }</td>
+                @if (ResizableColumns)
+                {
+                    <td class="column-width-draghandle"></td>
+                }
             }
         </tr>
     }
@@ -129,12 +133,11 @@
                 {
                     <div class="column-options">@col.ColumnOptions</div>
                 }
-
-                @if (ResizableColumns)
-                {
-                    <div class="column-width-draghandle"></div>
-                }
             </th>
+            @if (ResizableColumns)
+            {
+                <th class="column-width-draghandle"></th>
+            }
         }
     }
 
