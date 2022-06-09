@@ -17,11 +17,11 @@ th ::deep .sort-indicator {
     text-align: center;
 }
 
-th .col-sort-asc ::deep .sort-indicator:before {
+.col-sort-asc ::deep .sort-indicator:before {
     content: '\2B9F';
 }
 
-th .col-sort-desc ::deep .sort-indicator:before {
+.col-sort-desc ::deep .sort-indicator:before {
     content: '\2B9D';
 }
 
