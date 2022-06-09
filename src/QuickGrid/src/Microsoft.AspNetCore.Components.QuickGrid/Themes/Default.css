@@ -1,9 +1,14 @@
+.quickgrid[theme=default] > thead > tr > th {
+    font-weight: normal;
+}
+
 .quickgrid[theme=default] .col-title, .quickgrid[theme=default] > tbody > tr > td {
     padding: 0.1rem 0.4rem;
 }
 
 .quickgrid[theme=default] .col-title {
     gap: 0.4rem; /* Separate the sort indicator from title text */
+    font-weight: bold;
 }
 
 .quickgrid[theme=default] .col-gap {
@@ -33,3 +38,9 @@
     .quickgrid[theme=default][resizable-columns] th.col-gap:hover:after {
         border-color: black;
     }
+
+.quickgrid[theme=default] .col-options {
+    box-shadow: 0 3px 8px 1px #aaa;
+    border-color: #ddd;
+    border-radius: 0.3rem;
+}

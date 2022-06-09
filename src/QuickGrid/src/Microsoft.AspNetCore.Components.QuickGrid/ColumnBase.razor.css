@@ -4,7 +4,6 @@
     min-width: 0px;
     flex-grow: 1;
     padding: 0;
-    font-weight: bold;
 }
 
 /* If the column is sortable, its title is rendered as a button element for accessibility and to support navigation by tab */

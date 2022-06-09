@@ -2,13 +2,13 @@ export function init(elem) {
     enableColumnResizing(elem);
 
     const bodyClickHandler = event => {
-        const columnOptionsElement = elem.querySelector('thead .column-options');
+        const columnOptionsElement = elem.querySelector('thead .col-options');
         if (columnOptionsElement && event.path.indexOf(columnOptionsElement) < 0) {
             elem.dispatchEvent(new CustomEvent('closecolumnoptions', { bubbles: true }));
         }
     };
     const keyDownHandler = event => {
-        const columnOptionsElement = elem.querySelector('thead .column-options');
+        const columnOptionsElement = elem.querySelector('thead .col-options');
         if (columnOptionsElement && event.key === "Escape") {
             elem.dispatchEvent(new CustomEvent('closecolumnoptions', { bubbles: true }));
         }
@@ -28,7 +28,7 @@ export function init(elem) {
 }
 
 export function checkColumnOptionsPosition(elem) {
-    const colOptions = elem.querySelector('.column-options');
+    const colOptions = elem.querySelector('.col-options');
     if (colOptions && colOptions.offsetLeft < 0) {
         colOptions.style.transform = `translateX(${ -1 * colOptions.offsetLeft }px)`;
     }

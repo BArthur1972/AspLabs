@@ -1,5 +1,5 @@
 th {
-    position: relative; /* So that column-options appears next to it */
+    position: relative; /* So that col-options appears next to it */
 }
 
 .col-header-content {
@@ -36,7 +36,7 @@ th ::deep .col-options-button {
         content: '\2630';
     }
 
-.column-options {
+.col-options {
     position: absolute;
     background: white;
     border: 1px solid silver;
@@ -45,7 +45,7 @@ th ::deep .col-options-button {
     z-index: 1;
 }
 
-.col-justify-end .column-options {
+.col-justify-end .col-options {
     left: unset;
     right: 0;
 }
@@ -86,12 +86,12 @@ html[dir=rtl] td.col-justify-end {
     text-align: left;
 }
 
-html[dir=rtl] .column-options {
+html[dir=rtl] .col-options {
     left: unset;
     right: 0;
 }
 
-html[dir=rtl] .col-justify-end .column-options {
+html[dir=rtl] .col-justify-end .col-options {
     right: unset;
     left: 0;
 }
