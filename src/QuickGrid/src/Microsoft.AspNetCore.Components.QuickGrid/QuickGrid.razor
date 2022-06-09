@@ -145,15 +145,15 @@
 
     private string? ColumnHeaderClass(ColumnBase<TGridItem> column)
         => _sortByColumn == column
-        ? $"{ColumnClass(column)} {(_sortByAscending ? "sorted-asc" : "sorted-desc")}"
+        ? $"{ColumnClass(column)} {(_sortByAscending ? "col-sort-asc" : "col-sort-desc")}"
         : ColumnClass(column);
 
     private string? ColumnClass(ColumnBase<TGridItem> column)
     {
         switch (column.Align)
         {
-            case Align.Center: return $"grid-col-center {column.Class}";
-            case Align.Right: return $"grid-col-right {column.Class}";
+            case Align.Center: return $"col-justify-center {column.Class}";
+            case Align.Right: return $"col-justify-end {column.Class}";
             default: return column.Class;
         }
     }

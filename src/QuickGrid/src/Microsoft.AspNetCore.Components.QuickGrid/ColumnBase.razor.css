@@ -10,7 +10,7 @@ th:hover .column-title-flex, th:focus-within .column-title-flex {
     filter: brightness(0.93);
 }
 
-th.sorted-asc:focus-within .column-title-flex, th.sorted-desc:focus-within .column-title-flex {
+th.col-sort-asc:focus-within .column-title-flex, th.col-sort-desc:focus-within .column-title-flex {
     filter: brightness(0.85);
 }
 
@@ -21,7 +21,7 @@ th.sorted-asc:focus-within .column-title-flex, th.sorted-desc:focus-within .colu
     flex-grow: 1;
 }
 
-.grid-col-right .column-title {
+.col-justify-end .column-title {
     flex-direction: row-reverse;
 }
 
@@ -29,19 +29,19 @@ button.column-title {
     padding: 0;
 }
 
-th.grid-col-center .column-title-flex {
+th.col-justify-center .column-title-flex {
     justify-content: center;
 }
 
-th.grid-col-center .column-title {
+th.col-justify-center .column-title {
     justify-content: center;
 }
 
-th.grid-col-right .column-title-flex {
+th.col-justify-end .column-title-flex {
     justify-content: flex-end;
 }
 
-th.grid-col-right .column-title {
+th.col-justify-end .column-title {
     justify-content: flex-end;
 }
 

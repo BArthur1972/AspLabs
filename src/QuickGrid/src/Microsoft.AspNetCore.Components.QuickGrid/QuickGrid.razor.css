@@ -8,11 +8,11 @@ th {
     text-align: center;
 }
 
-.sorted-asc ::deep .sort-indicator:before {
+.col-sort-asc ::deep .sort-indicator:before {
     content: '\25b2';
 }
 
-.sorted-desc ::deep .sort-indicator:before {
+.col-sort-desc ::deep .sort-indicator:before {
     content: '\25bc';
 }
 
@@ -57,10 +57,20 @@ th:last-of-type .column-width-draghandle {
     display: none;
 }
 
-td.grid-col-center {
+td.col-justify-center {
     text-align: center;
 }
 
-td.grid-col-right {
+td.col-justify-end {
     text-align: right;
+}
+
+td.col-justify-end {
+    text-align: right;
+}
+
+html[dir=rtl] td.col-justify-end {
+    /* Unfortunately we can't use the :dir pseudoselector due to lack of browser support. Instead we have to rely on
+    the developer setting <html dir="rtl"> to detect if we're in RTL mode. */
+    text-align: left;
 }
