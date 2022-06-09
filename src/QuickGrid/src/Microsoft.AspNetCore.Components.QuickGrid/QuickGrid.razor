@@ -121,13 +121,11 @@
         foreach (var col in _columns)
         {
             <th class="@ColumnHeaderClass(col)" aria-sort="@AriaSortValue(col)" @key="@col" scope="col">
-                @col.HeaderContent
+                <div class="col-header-content">@col.HeaderContent</div>
 
                 @if (col == _displayOptionsForColumn)
                 {
-                    <div class="column-options">
-                        @col.ColumnOptions
-                    </div>
+                    <div class="column-options">@col.ColumnOptions</div>
                 }
 
                 @if (ResizableColumns)

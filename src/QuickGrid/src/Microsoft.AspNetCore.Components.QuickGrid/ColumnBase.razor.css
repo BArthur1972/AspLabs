@@ -1,71 +1,23 @@
-.column-title-flex {
-    position: relative;
-    display: flex;
-    align-items: stretch;
-    user-select: none;
-    overflow: hidden;
-}
-
-th:hover .column-title-flex, th:focus-within .column-title-flex {
-    filter: brightness(0.93);
-}
-
-th.col-sort-asc:focus-within .column-title-flex, th.col-sort-desc:focus-within .column-title-flex {
-    filter: brightness(0.85);
-}
-
-.column-title {
+.col-title {
     display: flex;
     align-items: center;
     min-width: 0px;
     flex-grow: 1;
-}
-
-.col-justify-end .column-title {
-    flex-direction: row-reverse;
-}
-
-button.column-title {
     padding: 0;
 }
 
-th.col-justify-center .column-title-flex {
-    justify-content: center;
+.col-justify-end .col-title {
+    flex-direction: row-reverse;
 }
 
-th.col-justify-center .column-title {
-    justify-content: center;
-}
-
-th.col-justify-end .column-title-flex {
-    justify-content: flex-end;
-}
-
-th.col-justify-end .column-title {
-    justify-content: flex-end;
-}
-
-.column-options-button {
+.col-options-button {
     border: none;
-    opacity: 0.3;
-    margin-left: auto;
+    background: none;
 }
 
-    .column-options-button:hover {
-        opacity: 1;
-        background-color: rgba(0,0,0,0.1);
+    .col-options-button:before {
+        content: '\22ee';
     }
-
-    .column-options-button:before {
-        content: '\2630';
-        margin: 0;
-        padding: 0 0.25rem;
-        text-align: center;
-    }
-
-th:hover .column-options-button, th:focus-within .column-options-button {
-    opacity: 1;
-}
 
 .sortable {
     border: none;
@@ -74,16 +26,8 @@ th:hover .column-options-button, th:focus-within .column-options-button {
     cursor: pointer;
 }
 
-    .sortable:active, .column-options-button:active, .column-options-button:hover:active {
-        background: rgba(0,0,0,0.15);
-    }
-
-        .sortable:active + .column-options-button {
-            background: rgba(0,0,0,0.29);
-        }
-
 .title-text {
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;    
     overflow: hidden;
     white-space: nowrap;
     font-weight: bold;

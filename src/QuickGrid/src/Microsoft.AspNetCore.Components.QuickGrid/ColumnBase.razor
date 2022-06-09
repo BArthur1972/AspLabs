@@ -34,26 +34,24 @@
         }
         else
         {
-            <div class="column-title-flex">
-                @if (Sortable.HasValue ? Sortable.Value : SupportsSorting())
-                {
-                    <button class="column-title sortable" @onclick="@(() => Grid.SortByColumnAsync(this))">
-                        <div class="title-text">@Title</div>
-                        <div class="sort-indicator" aria-hidden="true"></div>
-                    </button>
-                }
-                else
-                {
-                    <div class="column-title">
-                        <div class="title-text">@Title</div>
-                    </div>
-                }
+            if (Sortable.HasValue ? Sortable.Value : SupportsSorting())
+            {
+                <button class="col-title sortable" @onclick="@(() => Grid.SortByColumnAsync(this))">
+                    <div class="title-text">@Title</div>
+                    <div class="sort-indicator" aria-hidden="true"></div>
+                </button>
+            }
+            else
+            {
+                <div class="col-title">
+                    <div class="title-text">@Title</div>
+                </div>
+            }
 
-                @if (ColumnOptions is not null)
-                {
-                    <button class="column-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
-                }
-            </div>
+            @if (ColumnOptions is not null)
+            {
+                <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
+            }
         }
     }
 }

@@ -1,5 +1,14 @@
 th {
     position: relative; /* So that column-options appears next to it */
+    display: table-cell; /* So the header elements can be lined up neatly */
+}
+
+.col-header-content {
+    /* We want the th elements to be display:flex, but they also have to be display:table-cell to avoid breaking the layout.
+       So .col-header-content is an immediate child with display:flex. */
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
 ::deep .sort-indicator {
@@ -9,11 +18,11 @@ th {
 }
 
 .col-sort-asc ::deep .sort-indicator:before {
-    content: '\25b2';
+    content: '\2B9F';
 }
 
 .col-sort-desc ::deep .sort-indicator:before {
-    content: '\25bc';
+    content: '\2B9D';
 }
 
 .column-options {
