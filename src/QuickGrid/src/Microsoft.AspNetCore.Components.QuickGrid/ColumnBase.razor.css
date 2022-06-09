@@ -15,6 +15,10 @@ button.col-title {
     cursor: pointer;
 }
 
+.col-justify-center .col-title {
+    justify-content: center;
+}
+
 .col-justify-end .col-title {
     flex-direction: row-reverse; /* For end-justified cols, the sort indicator should appear before the title text */
 }

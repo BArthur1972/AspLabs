@@ -29,17 +29,18 @@ th ::deep .sort-indicator {
 th ::deep .col-options-button {
     border: none;
     background: none;
+    padding: 0; /* So that even if the text on the button is wide, it gets properly centered */
 }
 
     th ::deep .col-options-button:before {
-        content: '\22ee';
+        content: '\2630';
     }
 
 .column-options {
     position: absolute;
     background: white;
     border: 1px solid silver;
-    right: 0;
+    left: 0;
     padding: 1rem;
     z-index: 1;
 }
@@ -81,6 +82,6 @@ html[dir=rtl] td.col-justify-end {
 }
 
 html[dir=rtl] .column-options {
-    right: unset;
-    left: 0;
+    left: unset;
+    right: 0;
 }

@@ -34,6 +34,11 @@
         }
         else
         {
+            @if (ColumnOptions is not null)
+            {
+                <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
+            }
+
             if (Sortable.HasValue ? Sortable.Value : SupportsSorting())
             {
                 <button class="col-title" @onclick="@(() => Grid.SortByColumnAsync(this))">
@@ -46,11 +51,6 @@
                 <div class="col-title">
                     <div class="col-title-text">@Title</div>
                 </div>
-            }
-
-            @if (ColumnOptions is not null)
-            {
-                <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
             }
         }
     }
