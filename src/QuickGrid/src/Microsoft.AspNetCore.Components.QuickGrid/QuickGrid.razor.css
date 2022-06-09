@@ -69,8 +69,13 @@ td.col-justify-end {
     text-align: right;
 }
 
-html[dir=rtl] td.col-justify-end {
-    /* Unfortunately we can't use the :dir pseudoselector due to lack of browser support. Instead we have to rely on
+/* Unfortunately we can't use the :dir pseudoselector due to lack of browser support. Instead we have to rely on
     the developer setting <html dir="rtl"> to detect if we're in RTL mode. */
+html[dir=rtl] td.col-justify-end {
     text-align: left;
+}
+
+html[dir=rtl] .column-width-draghandle {
+    right: unset;
+    left: -0.5rem;
 }

@@ -42,12 +42,13 @@ function enableColumnResizing(elem) {
             evt.stopPropagation();
             const startPageX = evt.pageX;
             const originalColumnWidth = th.offsetWidth;
+            const rtlMultiplier = window.getComputedStyle(th, null).getPropertyValue('direction') === 'rtl' ? -1 : 1;
             let updatedColumnWidth = 0;
 
             function handleMouseMove(evt) {
                 evt.preventDefault();
                 evt.stopPropagation();
-                const nextWidth = originalColumnWidth + evt.pageX - startPageX;
+                const nextWidth = originalColumnWidth + (evt.pageX - startPageX) * rtlMultiplier;
                 if (Math.abs(nextWidth - updatedColumnWidth) > 0) {
                     updatedColumnWidth = nextWidth;
                     th.style.width = `${updatedColumnWidth}px`;
