@@ -1,5 +1,5 @@
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
-abstract partial class ColumnBase<TGridItem>
+public abstract partial class ColumnBase<TGridItem>
 {
 }

@@ -8,7 +8,7 @@
     @{ _columns.Clear(); }
     @ChildContent
     <Defer>
-        <table aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
+        <table class="quickgrid @Class" theme="@Theme" aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
             <thead>
                 <tr>
                     @RenderColumnHeaders
@@ -34,6 +34,8 @@
 
 @code {
     [Parameter, EditorRequired] public IQueryable<TGridItem>? Items { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Theme { get; set; } = "default";
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool Virtualize { get; set; }
     [Parameter] public bool ResizableColumns { get; set; }
