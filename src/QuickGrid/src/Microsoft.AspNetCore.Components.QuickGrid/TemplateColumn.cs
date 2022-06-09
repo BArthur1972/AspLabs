@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
+using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
@@ -10,13 +9,12 @@ public class TemplateColumn<TGridItem> : ColumnBase<TGridItem>
     [Parameter] public RenderFragment<TGridItem> ChildContent { get; set; } = EmptyChildContent;
     [Parameter] public Func<IQueryable<TGridItem>, SortBy<TGridItem>>? SortBy { get; set; }
 
-    protected override void OnParametersSet()
-    {
-        CellContent = ChildContent;
-    }
-
-    protected override bool CanSort => SortBy != null;
-
-    internal override IQueryable<TGridItem> GetSortedItems(IQueryable<TGridItem> source, bool ascending)
+    protected internal override IQueryable<TGridItem> ApplyColumnSort(IQueryable<TGridItem> source, bool ascending)
         => SortBy == null ? source : SortBy(source).Apply(source, ascending);
+
+    protected internal override void CellContent(RenderTreeBuilder builder, TGridItem item)
+        => builder.AddContent(0, ChildContent(item));
+
+    protected override bool SupportsSorting()
+        => SortBy is not null;
 }

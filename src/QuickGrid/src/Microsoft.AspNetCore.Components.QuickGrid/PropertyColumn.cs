@@ -1,30 +1,28 @@
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
+using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
 {
     private Expression<Func<TGridItem, TProp>>? _cachedProperty;
-    private Func<TGridItem, TProp>? _compiledPropertyExpression;
+    private Func<TGridItem, string?>? _cellTextFunc;
 
     [Parameter, EditorRequired] public Expression<Func<TGridItem, TProp>> Property { get; set; } = default!;
     [Parameter] public string? Format { get; set; }
-    [Parameter] public EventCallback<TGridItem> OnCellClicked { get; set; }
 
     protected override void OnParametersSet()
     {
         if (_cachedProperty != Property)
         {
             _cachedProperty = Property;
-            _compiledPropertyExpression = Property.Compile();
+            var compiledPropertyExpression = Property.Compile();
 
-            Func<TGridItem, string?> cellTextFunc;
             if (!string.IsNullOrEmpty(Format))
             {
                 if (typeof(IFormattable).IsAssignableFrom(typeof(TProp)))
                 {
-                    cellTextFunc = item => ((IFormattable?)_compiledPropertyExpression!(item))?.ToString(Format, null);
+                    _cellTextFunc = item => ((IFormattable?)compiledPropertyExpression!(item))?.ToString(Format, null);
 
                 }
                 else
@@ -34,22 +32,7 @@ public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
             }
             else
             {
-                cellTextFunc = item => _compiledPropertyExpression!(item)?.ToString();
-            }
-
-            if (OnCellClicked.HasDelegate)
-            {
-                CellContent = item => builder =>
-                {
-                    builder.OpenElement(0, "button");
-                    builder.AddAttribute(1, "onclick", () => OnCellClicked.InvokeAsync(item));
-                    builder.AddContent(2, cellTextFunc(item));
-                    builder.CloseElement();
-                };
-            }
-            else
-            {
-                CellContent = item => builder => builder.AddContent(0, cellTextFunc(item));
+                _cellTextFunc = item => compiledPropertyExpression!(item)?.ToString();
             }
         }
 
@@ -59,8 +42,9 @@ public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
         }
     }
 
-    protected override bool CanSort => true;
+    protected internal override void CellContent(RenderTreeBuilder builder, TGridItem item)
+        => builder.AddContent(0, _cellTextFunc!(item));
 
-    internal override IQueryable<TGridItem> GetSortedItems(IQueryable<TGridItem> source, bool ascending)
+    protected internal override IQueryable<TGridItem> ApplyColumnSort(IQueryable<TGridItem> source, bool ascending)
         => ascending ? source.OrderBy(Property) : source.OrderByDescending(Property);
 }

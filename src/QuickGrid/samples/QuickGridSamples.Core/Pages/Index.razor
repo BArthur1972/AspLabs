@@ -6,7 +6,7 @@
 <h1>Hello, world!</h1>
 
 <QuickGrid Items="@forecasts">
-    <PropertyColumn Property="x => x.Date">
+    <PropertyColumn Property="x => x.Date" Sortable="true">
         <ColumnOptions>
             Hello
         </ColumnOptions>
@@ -15,7 +15,7 @@
             <button @onclick="@(() => col.Grid.ShowColumnOptions(col))">Info</button>
         </HeaderTemplate>
     </PropertyColumn>
-    <PropertyColumn Property="x => x.TemperatureC" Align="Align.Left" />
+    <PropertyColumn Property="x => x.TemperatureC" Align="Align.Left" Sortable="true" />
     <TemplateColumn Title="Temperature (F)" Align="Align.Right" SortBy="@(x => x.SortByAscending(y => y.TemperatureC))">
         <ColumnOptions>
             Hello

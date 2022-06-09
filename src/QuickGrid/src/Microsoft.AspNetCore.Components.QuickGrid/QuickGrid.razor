@@ -54,7 +54,7 @@
     private InternalGridContext<TGridItem> _internalGridContext;
 
     private IQueryable<TGridItem>? GetSortedItems()
-        => _sortByColumn is null || Items is null ? Items : _sortByColumn.GetSortedItems(Items, _sortByAscending);
+        => _sortByColumn is null || Items is null ? Items : _sortByColumn.ApplyColumnSort(Items, _sortByAscending);
 
     public QuickGrid()
     {
@@ -111,7 +111,7 @@
         <tr @key="@(ItemKey(item))" aria-rowindex="@rowIndex">
             @foreach (var col in _columns)
             {
-                <td class="@ColumnClass(col)" @key="@col">@col.CellContent(item)</td>
+                <td class="@ColumnClass(col)" @key="@col">@{ col.CellContent(__builder, item); }</td>
             }
         </tr>
     }
