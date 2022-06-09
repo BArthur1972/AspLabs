@@ -1,5 +1,9 @@
+.quickgrid[theme=default] .col-title, .quickgrid[theme=default] > tbody > tr > td {
+    padding: 0.1rem 0.3rem;
+}
+
 .quickgrid[theme=default] .col-title {
-    gap: 0.5rem; /* Separate the sort indicator from title text */
+    gap: 0.4rem; /* Separate the sort indicator from title text */
 }
 
 .quickgrid[theme=default] .col-gap {
@@ -8,6 +12,10 @@
 
 .quickgrid[theme=default] .sort-indicator {
     opacity: 0.5;
+}
+
+.quickgrid[theme=default] .col-options-button {
+    width: 1.5rem;
 }
 
 .quickgrid[theme=default] button.col-title:hover, .quickgrid[theme=default] .col-options-button:hover {

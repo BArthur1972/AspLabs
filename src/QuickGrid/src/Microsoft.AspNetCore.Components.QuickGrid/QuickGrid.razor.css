@@ -44,7 +44,16 @@ th ::deep .col-options-button {
     z-index: 1;
 }
 
+.col-gap {
+    visibility: hidden; /* It exists to leave a gap, but otherwise has no content by default */
+}
+
+    .col-gap:last-of-type {
+        display: none;
+    }
+
 [resizable-columns] th.col-gap {
+    visibility: visible;
     cursor: ew-resize;
 }
 
@@ -56,10 +65,6 @@ th ::deep .col-options-button {
         bottom: 5px;
         left: 0.5rem;
     }
-
-.col-gap:last-of-type {
-    display: none;
-}
 
 td.col-justify-center {
     text-align: center;
