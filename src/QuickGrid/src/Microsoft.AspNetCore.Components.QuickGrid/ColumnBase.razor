@@ -28,9 +28,9 @@
 
     private void RenderDefaultHeaderContent(RenderTreeBuilder __builder)
     {
-        @if (HeaderTemplate is RenderFragment<ColumnBase<TGridItem>> headerTemplate)
+        @if (HeaderTemplate is not null)
         {
-            @headerTemplate(this)
+            @HeaderTemplate(this)
         }
         else
         {
