@@ -8,7 +8,7 @@
     @{ _columns.Clear(); }
     @ChildContent
     <Defer>
-        <table class="quickgrid @Class" theme="@Theme" aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
+        <table class="quickgrid @Class" theme="@Theme" aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions" resizable-columns="@ResizableColumns">
             <thead>
                 <tr>
                     @RenderColumnHeaders
@@ -113,11 +113,8 @@
         <tr @key="@(ItemKey(item))" aria-rowindex="@rowIndex">
             @foreach (var col in _columns)
             {
-                <td class="@ColumnClass(col)" @key="@col">@{ col.CellContent(__builder, item); }</td>
-                @if (ResizableColumns)
-                {
-                    <td class="column-width-draghandle"></td>
-                }
+                <td class="@ColumnClass(col)" @key="@col">@{ col.CellContent(__builder, item); }</td>                
+                <td class="col-gap"></td>
             }
         </tr>
     }
@@ -134,10 +131,7 @@
                     <div class="column-options">@col.ColumnOptions</div>
                 }
             </th>
-            @if (ResizableColumns)
-            {
-                <th class="column-width-draghandle"></th>
-            }
+            <th class="col-gap"></th>
         }
     }
 

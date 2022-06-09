@@ -35,7 +35,7 @@ export function checkColumnOptionsPosition(elem) {
 }
 
 function enableColumnResizing(elem) {
-    elem.querySelectorAll('table.quickgrid > thead > tr > th.column-width-draghandle').forEach(handle => {
+    elem.querySelectorAll('table.quickgrid[resizable-columns] > thead > tr > th.col-gap').forEach(handle => {
         handle.addEventListener('mousedown', evt => {
             evt.preventDefault();
             evt.stopPropagation();

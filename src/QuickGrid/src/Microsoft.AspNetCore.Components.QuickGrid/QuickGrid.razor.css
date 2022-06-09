@@ -44,24 +44,20 @@ th ::deep .col-options-button {
     z-index: 1;
 }
 
-.column-width-draghandle {
-    width: 1rem;
-}
-
-th.column-width-draghandle {
+[resizable-columns] th.col-gap {
     cursor: ew-resize;
 }
 
-th.column-width-draghandle:after {
-    content: ' ';
-    border-left: 1px solid silver;
-    position: absolute;
-    top: 5px;
-    bottom: 5px;
-    left: 0.5rem;
-}
+    [resizable-columns] th.col-gap:after {
+        content: ' ';
+        border-left: 1px solid silver;
+        position: absolute;
+        top: 5px;
+        bottom: 5px;
+        left: 0.5rem;
+    }
 
-th:last-of-type.column-width-draghandle, td:last-of-type.column-width-draghandle {
+.col-gap:last-of-type {
     display: none;
 }
 
@@ -77,11 +73,6 @@ td.col-justify-end {
     the developer setting <html dir="rtl"> to detect if we're in RTL mode. */
 html[dir=rtl] td.col-justify-end {
     text-align: left;
-}
-
-html[dir=rtl] .column-width-draghandle {
-    right: unset;
-    left: -0.5rem;
 }
 
 html[dir=rtl] .column-options {
