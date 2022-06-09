@@ -12,7 +12,7 @@
             Hello
         </ColumnOptions>
     </PropertyColumn>
-    <PropertyColumn Property="x => x.TemperatureC" Align="Align.Left" Sortable="true" />
+    <PropertyColumn Property="x => x.TemperatureC" Sortable="true" />
     <TemplateColumn Title="Temperature (F)" Align="Align.Right" SortBy="@(x => x.SortByAscending(y => y.TemperatureC))">
         <ColumnOptions>
             Hello
