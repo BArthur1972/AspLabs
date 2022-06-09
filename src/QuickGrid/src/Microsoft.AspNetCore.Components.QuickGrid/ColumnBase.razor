@@ -36,15 +36,15 @@
         {
             if (Sortable.HasValue ? Sortable.Value : SupportsSorting())
             {
-                <button class="col-title sortable" @onclick="@(() => Grid.SortByColumnAsync(this))">
-                    <div class="title-text">@Title</div>
+                <button class="col-title" @onclick="@(() => Grid.SortByColumnAsync(this))">
+                    <div class="col-title-text">@Title</div>
                     <div class="sort-indicator" aria-hidden="true"></div>
                 </button>
             }
             else
             {
                 <div class="col-title">
-                    <div class="title-text">@Title</div>
+                    <div class="col-title-text">@Title</div>
                 </div>
             }
 

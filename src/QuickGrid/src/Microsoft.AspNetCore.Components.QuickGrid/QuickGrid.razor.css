@@ -1,6 +1,5 @@
 th {
     position: relative; /* So that column-options appears next to it */
-    display: table-cell; /* So the header elements can be lined up neatly */
 }
 
 .col-header-content {
@@ -11,19 +10,30 @@ th {
     align-items: center;
 }
 
-::deep .sort-indicator {
+/* Deep to make it easy for people adding a sort-indicator element in a custom HeaderTemplate */
+th ::deep .sort-indicator {
     /* Preset width so the column width doen't change as the sort indicator appears/disappears */
     width: 1rem;
     text-align: center;
 }
 
-.col-sort-asc ::deep .sort-indicator:before {
+th .col-sort-asc ::deep .sort-indicator:before {
     content: '\2B9F';
 }
 
-.col-sort-desc ::deep .sort-indicator:before {
+th .col-sort-desc ::deep .sort-indicator:before {
     content: '\2B9D';
 }
+
+/* Deep to make it easy for people adding a col-options-button element in a custom HeaderTemplate */
+th ::deep .col-options-button {
+    border: none;
+    background: none;
+}
+
+    th ::deep .col-options-button:before {
+        content: '\22ee';
+    }
 
 .column-options {
     position: absolute;
