@@ -1,34 +1,11 @@
-table {
-    table-layout: fixed;
-}
-
-thead { 
-    /* Note: this doesn't work properly in webviews on Android */
-    /* To have a table header be sticky on Android, you have to put this on the th elements, not the thead */
-    position: sticky;
-    top: 0;
-}
-
 th {
-    padding: 0;
-    position: relative;
+    position: relative; /* So that column-options appears next to it */
 }
 
 ::deep .sort-indicator {
-    width: 1.5rem;
-    height: 1rem;
-    opacity: 0.4;
-    flex-shrink: 0;
+    /* Preset width so the column width doen't change as the sort indicator appears/disappears */
+    width: 1rem;
     text-align: center;
-    padding-right: 0.2rem;
-    display: inline-block;
-    align-items: center;
-}
-
-.sorted-asc ::deep .sort-indicator, .sorted-desc ::deep .sort-indicator {
-    background: none;
-    opacity: 0.6;
-    margin-top: -0.6rem;
 }
 
 .sorted-asc ::deep .sort-indicator:before {
@@ -42,25 +19,30 @@ th {
 .column-options {
     position: absolute;
     background: white;
-    filter: brightness(1);
     border: 1px solid silver;
     right: 0;
     padding: 1rem;
-    box-shadow: 0px 2px 2px rgba(0,0,0,0.25);
+    z-index: 1;
 }
 
 .column-width-draghandle {
+    /*
+        Absolutely positioned so it can be dragged.
+        This also means it doesn't consume any horizontal space, so it's up to the developer to ensure it's positioned
+        over some whitespace. The default positioning puts the center line directly over the right-hand-edge of the
+        column. Developers can use "transform: translateX(...)" to move it further right if there's a gap between the
+        columns.
+    */
     position: absolute;
-    z-index: 100;
+    width: 1rem;
     top: 0; bottom: 0; right: -0.5rem;
-    width: 0.7rem;
     cursor: ew-resize;
 }
 
 .column-width-draghandle:after {
     content: ' ';
-    border-left: 1px solid rgba(0,0,0,0.1);
-    position: absolute; top: 0.4rem; bottom: 0.4rem; left: 0.35rem;
+    border-left: 1px solid rgba(0, 0, 0, 0.5);
+    position: absolute; top: 5px; bottom: 5px; left: 0.5rem;
 }
 
 .column-width-draghandle:hover {
