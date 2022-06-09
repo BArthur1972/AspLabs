@@ -60,12 +60,12 @@ th ::deep .col-options-button {
 
 .column-width-draghandle:after {
     content: ' ';
-    border-left: 1px solid rgba(0, 0, 0, 0.5);
+    border-left: 1px solid silver;
     position: absolute; top: 5px; bottom: 5px; left: 0.5rem;
 }
 
 .column-width-draghandle:hover {
-    background: #aaa;
+    background: gray;
 }
 
 .column-width-draghandle:hover:after {
