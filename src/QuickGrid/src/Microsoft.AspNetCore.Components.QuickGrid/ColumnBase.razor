@@ -34,7 +34,7 @@
         }
         else
         {
-            @if (ColumnOptions is not null)
+            @if (ColumnOptions is not null && Align != Align.Right)
             {
                 <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
             }
@@ -51,6 +51,11 @@
                 <div class="col-title">
                     <div class="col-title-text">@Title</div>
                 </div>
+            }
+
+            @if (ColumnOptions is not null && Align == Align.Right)
+            {
+                <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
             }
         }
     }

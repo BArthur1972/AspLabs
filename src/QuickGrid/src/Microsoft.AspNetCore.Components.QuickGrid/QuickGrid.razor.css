@@ -45,6 +45,11 @@ th ::deep .col-options-button {
     z-index: 1;
 }
 
+.col-justify-end .column-options {
+    left: unset;
+    right: 0;
+}
+
 .col-gap {
     visibility: hidden; /* It exists to leave a gap, but otherwise has no content by default */
 }
@@ -84,4 +89,9 @@ html[dir=rtl] td.col-justify-end {
 html[dir=rtl] .column-options {
     left: unset;
     right: 0;
+}
+
+html[dir=rtl] .col-justify-end .column-options {
+    right: unset;
+    left: 0;
 }
