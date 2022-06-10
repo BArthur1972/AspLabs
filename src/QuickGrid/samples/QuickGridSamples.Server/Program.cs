@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using QuickGridSamples.Core.Models;
 using QuickGridSamples.Server.Data;
 
@@ -7,8 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<IDataService, LocalDataService>();
+builder.Services.AddScoped<IDataService, LocalDataService>();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=app.db"));
+
 var app = builder.Build();
+SeedData.EnsureSeeded(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

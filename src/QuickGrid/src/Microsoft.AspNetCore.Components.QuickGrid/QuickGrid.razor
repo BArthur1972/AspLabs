@@ -43,7 +43,7 @@
     [Parameter] public bool ResizableColumns { get; set; }
     [Parameter] public float ItemSize { get; set; } = 50;
     [Parameter] public Func<TGridItem, object> ItemKey { get; set; } = x => x;
-    [Parameter] public PaginationState Pagination { get; set; }
+    [Parameter] public PaginationState? Pagination { get; set; }
 
     private Virtualize<(int, TGridItem)>? _virtualizeComponent;
     private List<ColumnBase<TGridItem>> _columns;

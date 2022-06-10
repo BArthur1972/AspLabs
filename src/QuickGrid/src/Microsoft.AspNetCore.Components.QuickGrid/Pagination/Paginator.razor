@@ -24,9 +24,9 @@
 </div>
 
 @code {
-    [Parameter] public PaginationState Value { get; set; }
-    [Parameter] public EventCallback<PaginationState> ValueChanged { get; set; }
-    [Parameter] public RenderFragment SummaryTemplate { get; set; }
+    [Parameter] public PaginationState Value { get; set; } = new();
+    [Parameter] public EventCallback<PaginationState>? ValueChanged { get; set; } = default!;
+    [Parameter] public RenderFragment? SummaryTemplate { get; set; }
 
     Task GoFirst() => GoToPage(0);
     Task GoPrevious() => GoToPage(Value.CurrentPageIndex - 1);
@@ -39,6 +39,6 @@
     Task GoToPage(int pageIndex)
     {
         Value.CurrentPageIndex = pageIndex;
-        return ValueChanged.InvokeAsync(Value);
+        return ValueChanged?.InvokeAsync(Value) ?? Task.CompletedTask;
     }
 }
