@@ -7,7 +7,6 @@
 <CascadingValue IsFixed="true" Value="@_internalGridContext">
     @{
         _columns.Clear();
-        _paginator = null;
     }
     @ChildContent
     <Defer>
@@ -44,6 +43,7 @@
     [Parameter] public bool ResizableColumns { get; set; }
     [Parameter] public float ItemSize { get; set; } = 50;
     [Parameter] public Func<TGridItem, object> ItemKey { get; set; } = x => x;
+    [Parameter] public PaginationState Pagination { get; set; }
 
     private Virtualize<(int, TGridItem)>? _virtualizeComponent;
     private List<ColumnBase<TGridItem>> _columns;
@@ -57,10 +57,26 @@
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
-    private PaginatorBase<TGridItem>? _paginator;
 
     private IQueryable<TGridItem>? GetSortedItems()
-        => _sortByColumn is null || Items is null ? Items : _sortByColumn.ApplyColumnSort(Items, _sortByAscending);
+    {
+        var result = Items;
+
+        if (result is not null)
+        {
+            if (_sortByColumn is not null)
+            {
+                result = _sortByColumn.ApplyColumnSort(result, _sortByAscending);
+            }
+
+            if (Pagination is not null)
+            {
+                result = Pagination.ApplyPagination(result);
+            }
+        }
+
+        return result;
+    }
 
     public QuickGrid()
     {
@@ -72,17 +88,6 @@
     internal void AddColumn(ColumnBase<TGridItem> column)
     {
         _columns.Add(column);
-    }
-
-    // Invoked by descendant PaginatorBase components at a special time during rendering
-    internal void SetPaginator(PaginatorBase<TGridItem> paginator)
-    {
-        if (_paginator is not null)
-        {
-            throw new InvalidOperationException("Cannot register more than one paginator");
-        }
-
-        _paginator = paginator;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

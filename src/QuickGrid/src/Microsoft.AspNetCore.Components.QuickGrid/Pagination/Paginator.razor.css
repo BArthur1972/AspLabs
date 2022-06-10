@@ -1,0 +1,25 @@
+.navigation {
+    display: flex;
+    margin-top: 0.5rem;
+}
+
+.navigation button {
+    border: 0;
+    background: none;
+}
+
+.go-first:after {
+    content: '⇤';
+}
+
+.go-previous:after {
+    content: '←';
+}
+
+.go-next:after {
+    content: '→';
+}
+
+.go-last:after {
+    content: '⇥';
+}
