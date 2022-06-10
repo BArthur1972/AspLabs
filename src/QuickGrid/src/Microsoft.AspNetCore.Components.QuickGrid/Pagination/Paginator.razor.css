@@ -1,12 +1,28 @@
+.paginator {
+    display: flex;
+    border-top: 1px solid #ccc;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+}
+
 .navigation {
     display: flex;
-    margin-top: 0.5rem;
+    margin-left: auto;
+    gap: 1rem;
 }
 
 .navigation button {
     border: 0;
     background: none;
 }
+
+    .navigation button:not([disabled]):hover {
+        background-color: #eee;
+    }
+
+    .navigation button:not([disabled]):active {
+        background-color: #aaa;
+    }
 
 .go-first:after {
     content: '⇤';

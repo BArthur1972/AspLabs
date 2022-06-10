@@ -2,3 +2,9 @@
     width: 2rem;
     height: 1.5rem;
 }
+
+.grid {
+    display: inline-flex;
+    flex-direction: column;
+    width: 45rem;
+}
