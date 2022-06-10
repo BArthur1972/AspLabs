@@ -9,6 +9,6 @@
 }
 
 /* TODO: Make the column gaps into not-physical-columns so this becomes nth-child(2) as you'd expect */
-.grid ::deep td:nth-child(3) {
+.grid ::deep .country-name {
     width: 15rem;
 }

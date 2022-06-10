@@ -5,8 +5,8 @@
 {
     <div class="grid">
         <QuickGrid Items="@countries" ResizableColumns="true" Pagination="@pagination">
-            <TemplateColumn Align="Align.Center"><img class="flag" src="flags/@(context.Code).svg" /></TemplateColumn>
-            <PropertyColumn Property="@(c => c.Name)" Sortable="true" />
+            <TemplateColumn><img class="flag" src="flags/@(context.Code).svg" /></TemplateColumn>
+            <PropertyColumn Class="country-name" Property="@(c => c.Name)" Sortable="true" />
             <PropertyColumn Property="@(c => c.Medals.Gold)" Sortable="true" Align="Align.Right" />
             <PropertyColumn Property="@(c => c.Medals.Silver)" Sortable="true" Align="Align.Right" />
             <PropertyColumn Property="@(c => c.Medals.Bronze)" Sortable="true" Align="Align.Right" />
