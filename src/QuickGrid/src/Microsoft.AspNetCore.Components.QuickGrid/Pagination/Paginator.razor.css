@@ -5,22 +5,22 @@
     padding: 0.5rem 0;
 }
 
-.navigation {
+nav {
     display: flex;
     margin-left: auto;
     gap: 1rem;
 }
 
-.navigation button {
+nav button {
     border: 0;
     background: none;
 }
 
-    .navigation button:not([disabled]):hover {
+    nav button:not([disabled]):hover {
         background-color: #eee;
     }
 
-    .navigation button:not([disabled]):active {
+    nav button:not([disabled]):active {
         background-color: #aaa;
     }
 

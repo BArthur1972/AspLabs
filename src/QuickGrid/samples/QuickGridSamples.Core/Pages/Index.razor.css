@@ -8,6 +8,10 @@
     flex-direction: column;
 }
 
+.grid ::deep tr {
+    height: 1.8rem;
+}
+
 /* TODO: Make the column gaps into not-physical-columns so this becomes nth-child(2) as you'd expect */
 .grid ::deep .country-name {
     width: 15rem;

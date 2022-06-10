@@ -11,16 +11,16 @@
             <text><strong>@Value.TotalItemCount</strong> items</text>
         }
     </div>
-    <div class="navigation">
-        <button class="go-first" @onclick="GoFirst" disabled="@(!CanGoBack)"></button>
-        <button class="go-previous" @onclick="GoPrevious" disabled="@(!CanGoBack)"></button>
+    <nav role="navigation">
+        <button class="go-first" @onclick="GoFirst" disabled="@(!CanGoBack)" title="Go to first page" aria-title="Go to first page"></button>
+        <button class="go-previous" @onclick="GoPrevious" disabled="@(!CanGoBack)" title="Go to previous page" aria-title="Go to previous page"></button>
         <div>
             Page <strong>@(Value.CurrentPageIndex + 1)</strong>
             of <strong>@(Value.LastPageIndex + 1)</strong>
         </div>
-        <button class="go-next" @onclick="GoNext" disabled="@(!CanGoForwards)"></button>
-        <button class="go-last" @onclick="GoLast" disabled="@(!CanGoForwards)"></button>
-    </div>
+        <button class="go-next" @onclick="GoNext" disabled="@(!CanGoForwards)" title="Go to next page" aria-title="Go to next page"></button>
+        <button class="go-last" @onclick="GoLast" disabled="@(!CanGoForwards)" title="Go to last page" aria-title="Go to last page"></button>
+    </nav>
 </div>
 
 @code {
