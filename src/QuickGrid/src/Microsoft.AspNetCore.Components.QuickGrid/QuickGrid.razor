@@ -5,7 +5,10 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 <CascadingValue IsFixed="true" Value="@_internalGridContext">
-    @{ _columns.Clear(); }
+    @{
+        _columns.Clear();
+        _paginator = null;
+    }
     @ChildContent
     <Defer>
         <table class="quickgrid @Class" theme="@Theme" aria-rowcount="@_rowCount" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions" resizable-columns="@ResizableColumns">
@@ -54,6 +57,7 @@
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
+    private PaginatorBase<TGridItem>? _paginator;
 
     private IQueryable<TGridItem>? GetSortedItems()
         => _sortByColumn is null || Items is null ? Items : _sortByColumn.ApplyColumnSort(Items, _sortByAscending);
@@ -68,6 +72,17 @@
     internal void AddColumn(ColumnBase<TGridItem> column)
     {
         _columns.Add(column);
+    }
+
+    // Invoked by descendant PaginatorBase components at a special time during rendering
+    internal void SetPaginator(PaginatorBase<TGridItem> paginator)
+    {
+        if (_paginator is not null)
+        {
+            throw new InvalidOperationException("Cannot register more than one paginator");
+        }
+
+        _paginator = paginator;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
