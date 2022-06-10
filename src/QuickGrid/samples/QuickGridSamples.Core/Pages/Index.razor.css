@@ -6,5 +6,9 @@
 .grid {
     display: inline-flex;
     flex-direction: column;
-    width: 45rem;
+}
+
+/* TODO: Make the column gaps into not-physical-columns so this becomes nth-child(2) as you'd expect */
+.grid ::deep td:nth-child(3) {
+    width: 15rem;
 }
