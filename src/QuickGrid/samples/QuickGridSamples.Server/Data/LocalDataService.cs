@@ -4,6 +4,9 @@ namespace QuickGridSamples.Server.Data;
 
 public class LocalDataService : IDataService
 {
+    // Data derived from https://www.kaggle.com/datasets/arjunprasadsarkhel/2021-olympics-in-tokyo,
+    // which is licensed as https://creativecommons.org/licenses/by-sa/4.0/
+
     public Task<Country[]> GetCountriesAsync()
     {
         var data = new[]

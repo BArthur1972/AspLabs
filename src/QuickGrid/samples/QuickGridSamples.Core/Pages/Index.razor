@@ -1,8 +1,6 @@
 @page "/"
 @inject IDataService DataService
 
-<PageTitle>Index</PageTitle>
-
 @if (countries is not null)
 {
     <QuickGrid Items="@countries" ResizableColumns=true>
@@ -16,7 +14,7 @@
 }
 
 @code {
-    IQueryable<Country>? countries;
+    IQueryable<Country> countries;
 
     protected override async Task OnInitializedAsync()
     {
