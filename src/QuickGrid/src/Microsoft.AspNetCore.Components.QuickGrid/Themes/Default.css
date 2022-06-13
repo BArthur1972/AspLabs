@@ -2,6 +2,10 @@
     font-weight: normal;
 }
 
+.quickgrid[theme=default].loading > tbody {
+    opacity: 0.25;
+}
+
 .quickgrid[theme=default] .col-title, .quickgrid[theme=default] > tbody > tr > td {
     padding: 0.1rem 0.4rem;
 }
