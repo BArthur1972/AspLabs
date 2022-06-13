@@ -4,6 +4,8 @@
 
 .quickgrid[theme=default].loading > tbody {
     opacity: 0.25;
+    transition: opacity linear 100ms;
+    transition-delay: 25ms; /* Don't want flicker if the queries are resolving almost immediately */
 }
 
 .quickgrid[theme=default] .col-title, .quickgrid[theme=default] > tbody > tr > td {
