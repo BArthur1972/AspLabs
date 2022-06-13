@@ -117,6 +117,10 @@
                 // as an adapter.
                 _currentViewItems = result.ToList()!;
                 _rowCount = Items!.Count();
+
+                // TODO: Consider also calling this before we do the async data load, since it might be desirable
+                // to show a "loading" state or clear the existing rows while fetching new ones
+                StateHasChanged();
             }
         }
     }
@@ -218,7 +222,7 @@
         }
     }
 
-    public async Task SortByColumnAsync(ColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
+    public Task SortByColumnAsync(ColumnBase<TGridItem> column, SortDirection direction = SortDirection.Auto)
     {
         _sortByAscending = direction switch
         {
@@ -229,13 +233,7 @@
         };
 
         _sortByColumn = column;
-
-        if (_virtualizeComponent is not null)
-        {
-            await _virtualizeComponent.RefreshDataAsync();
-        }
-
-        StateHasChanged();
+        return RefreshDataAsync();
     }
 
     public void ShowColumnOptions(ColumnBase<TGridItem> column)
