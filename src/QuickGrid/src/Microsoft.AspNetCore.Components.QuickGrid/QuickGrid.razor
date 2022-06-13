@@ -7,6 +7,7 @@
 <CascadingValue IsFixed="true" Value="@_internalGridContext">
     @{
         _columns.Clear();
+        _needsDeferredRender = false;
     }
     @ChildContent
     <Defer>
@@ -65,6 +66,8 @@
     private IQueryable<TGridItem>? _lastRefreshedItems;
     private long _latestDataLoadIdentifier;
 
+    private bool _needsDeferredRender;
+
     public QuickGrid()
     {
         _columns = new();
@@ -120,7 +123,11 @@
 
                 // TODO: Consider also calling this before we do the async data load, since it might be desirable
                 // to show a "loading" state or clear the existing rows while fetching new ones
-                StateHasChanged();
+
+                // Depending on whether the RefreshDataAsync is being chained into an event handler that in turn will
+                // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
+                // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
+                _ = StateHasChangedDeferredAsync(); // Not expected to throw
             }
         }
     }
@@ -290,5 +297,15 @@
     void CloseColumnOptions()
     {
         _displayOptionsForColumn = null;
+    }
+
+    async Task StateHasChangedDeferredAsync()
+    {
+        _needsDeferredRender = true;
+        await Task.Yield();
+        if (_needsDeferredRender)
+        {
+            StateHasChanged();
+        }
     }
 }
