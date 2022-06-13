@@ -12,4 +12,7 @@ public class PaginationState
     {
         return source.Skip(CurrentPageIndex * ItemsPerPage).Take(ItemsPerPage);
     }
+
+    public override int GetHashCode()
+        => HashCode.Combine(ItemsPerPage, CurrentPageIndex, TotalItemCount);
 }
