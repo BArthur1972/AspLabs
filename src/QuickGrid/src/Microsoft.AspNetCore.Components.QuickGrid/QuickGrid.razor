@@ -4,7 +4,7 @@
 @attribute [CascadingTypeParameter(nameof(TGridItem))]
 @inject IJSRuntime JS
 @implements IAsyncDisposable
-<CascadingValue IsFixed="true" Value="@_internalGridContext">
+<CascadingValue TValue="InternalGridContext<TGridItem>" IsFixed="true" Value="@_internalGridContext">
     @{
         _columns.Clear();
         _needsDeferredRender = false;
@@ -36,7 +36,8 @@
 </CascadingValue>
 
 @code {
-    [Parameter, EditorRequired] public IQueryable<TGridItem>? Items { get; set; }
+    [Parameter] public IQueryable<TGridItem>? Items { get; set; }
+    [Parameter] public GridItemsProvider<TGridItem>? ItemsProvider { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Theme { get; set; } = "default";
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -61,11 +62,10 @@
     // This is the final filtered and sorted data to be rendered.
     // We update it asynchronously each time the sort order changes, or if an external
     // component like Paginator tells us to do so. We only render after this has been updated.
-    private IEnumerable<TGridItem> _currentViewItems = Enumerable.Empty<TGridItem>();
+    private ICollection<TGridItem> _currentViewItems = Array.Empty<TGridItem>();
     private int _lastRefreshedPaginationStateHash;
-    private IQueryable<TGridItem>? _lastRefreshedItems;
-    private long _latestDataLoadIdentifier;
-    private bool _loading;
+    private object _lastAssignedItemsOrProvider;
+    private CancellationTokenSource? _pendingDataLoadCancellationTokenSource;
 
     private bool _needsDeferredRender;
 
@@ -77,9 +77,8 @@
 
     public async Task RefreshDataAsync()
     {
-        var thisDataLoadIdentifier = ++_latestDataLoadIdentifier;
-        _lastRefreshedItems = Items;
-        _loading = true;
+        _pendingDataLoadCancellationTokenSource?.Cancel();
+        var thisLoadCts = _pendingDataLoadCancellationTokenSource = new CancellationTokenSource();
 
         // Querying may be expensive (especially if it's not in-memory data), so we only update
         // the currently-rendered row data when explicitly asked, or when an event occurs that
@@ -89,46 +88,28 @@
             // This will call back into ProvideVirtualizedItems
             await _virtualizeComponent.RefreshDataAsync();
         }
-        else
+        else if (ItemsProvider is not null)
         {
-            // TODO: Support a whole alternative mechanism for non-IQueryable data sources
-            var result = Items;
-            if (result is null)
+            var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
+            var count = Pagination?.ItemsPerPage;
+            var result = await ItemsProvider(new GridItemsProviderRequest<TGridItem>(
+                startIndex, count, null, thisLoadCts.Token));
+            if (!thisLoadCts.IsCancellationRequested)
             {
-                _currentViewItems = Enumerable.Empty<TGridItem>();
-                _rowCount = 0;
-                return;
-            }
-
-            if (_sortByColumn is not null)
-            {
-                result = _sortByColumn.ApplyColumnSort(result, _sortByAscending);
-            }
-
-            if (Pagination is not null)
-            {
-                result = Pagination.ApplyPagination(result);
-                _lastRefreshedPaginationStateHash = Pagination.GetHashCode();
-            }
-
-            await Task.Delay(500); // Temporary: Simulate query duration to verify this makes sense
-
-            if (thisDataLoadIdentifier == _latestDataLoadIdentifier)
-            {
-                // TODO: in case you're using EF Core, we really want to call ToListAsync. That's an extension
-                // method defined in Microsoft.EntityFrameworkCore on IQueryable<T>. But we don't want to couple QuickGrid
-                // to EF Core generally, as that's too much extra code on WebAssembly if you're not using it (and wouldn't
-                // be trimmable if we referenced it here). May need some extra package you can reference optionally to act
-                // as an adapter.
-                _currentViewItems = result.ToList()!;
-                _rowCount = Items!.Count();
-                _loading = false;
+                // See below
+                _currentViewItems = result.Items;
+                _rowCount = result.TotalItemCount;
+                _pendingDataLoadCancellationTokenSource = null;
 
                 // Depending on whether the RefreshDataAsync is being chained into an event handler that in turn will
                 // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
                 // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
                 _ = StateHasChangedDeferredAsync(); // Not expected to throw
             }
+        }
+        else if (Items is not null)
+        {
+            throw new NotImplementedException("IQueryable was removed. TODO: Put back");
         }
     }
 
@@ -155,7 +136,30 @@
 
     protected override Task OnParametersSetAsync()
     {
-        var mustRefreshData = Items != _lastRefreshedItems
+        bool dataSourceHasChanged;
+
+        if (Items is not null)
+        {
+            if (ItemsProvider is not null)
+            {
+                throw new InvalidOperationException($"{nameof(QuickGrid)} requires one of {nameof(Items)} or {nameof(ItemsProvider)}, but both were specified.");
+            }
+
+            dataSourceHasChanged = Items != _lastAssignedItemsOrProvider;
+            _lastAssignedItemsOrProvider = Items;
+
+        }
+        else if (ItemsProvider is not null)
+        {
+            dataSourceHasChanged = ItemsProvider != (_lastAssignedItemsOrProvider as GridItemsProvider<TGridItem>);
+            _lastAssignedItemsOrProvider = ItemsProvider;
+        }
+        else
+        {
+            throw new InvalidOperationException($"{nameof(QuickGrid)} requires one of {nameof(Items)} or {nameof(ItemsProvider)}, but neither were specified.");
+        }
+
+        var mustRefreshData = dataSourceHasChanged
             || (Pagination is not null && Pagination.GetHashCode() != _lastRefreshedPaginationStateHash);
 
         return mustRefreshData ? RefreshDataAsync() : Task.CompletedTask;
@@ -220,7 +224,7 @@
         : ColumnClass(column);
 
     private string GridClass()
-        => $"quickgrid {Class} {(_loading ? "loading" : null)}";
+        => $"quickgrid {Class} {(_pendingDataLoadCancellationTokenSource is null ? null : "loading")}";
 
     private string? ColumnClass(ColumnBase<TGridItem> column)
     {
@@ -257,11 +261,7 @@
 
     private async ValueTask<ItemsProviderResult<(int, TGridItem)>> ProvideVirtualizedItems(ItemsProviderRequest request)
     {
-        if (Items is null)
-        {
-            return new ItemsProviderResult<(int, TGridItem)>(Enumerable.Empty<(int, TGridItem)>(), 0);
-        }
-        else
+        if (Items is not null)
         {
             // Debounce the requests. This eliminates a lot of redundant queries at the cost of slight lag after interactions.
             // If you wanted, you could try to make it only debounce on the 2nd-and-later request within a cluster.
@@ -277,6 +277,20 @@
                 items: records.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
                 totalItemCount: _rowCount);
             return result;
+        }
+        else if (ItemsProvider is not null)
+        {
+            var gridRequest = new GridItemsProviderRequest<TGridItem>(
+                request.StartIndex, request.Count, null, request.CancellationToken);
+            var result = await ItemsProvider(gridRequest);
+            _rowCount = result.TotalItemCount;
+            return new ItemsProviderResult<(int, TGridItem)>(
+                items: result.Items.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
+                totalItemCount: _rowCount);
+        }
+        else
+        {
+            return new ItemsProviderResult<(int, TGridItem)>(Enumerable.Empty<(int, TGridItem)>(), 0);
         }
     }
 

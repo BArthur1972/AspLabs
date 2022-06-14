@@ -12,8 +12,8 @@ internal class WebApiDataService : IDataService
         _httpClient = httpClient;
     }
 
-    public Task<Country[]> GetCountriesAsync()
+    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, CancellationToken cancellationToken)
     {
-        return _httpClient.GetFromJsonAsync<Country[]>("/api/countries");
+        return await _httpClient.GetFromJsonAsync<Country[]>($"/api/countries?startIndex={startIndex}&count={count}");
     }
 }

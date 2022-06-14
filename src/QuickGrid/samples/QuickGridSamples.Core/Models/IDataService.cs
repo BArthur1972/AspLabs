@@ -2,5 +2,5 @@ namespace QuickGridSamples.Core.Models;
 
 public interface IDataService
 {
-    Task<Country[]> GetCountriesAsync();
+    Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, CancellationToken cancellationToken);
 }

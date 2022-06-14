@@ -12,8 +12,20 @@ public class LocalDataService : IDataService
         _dbContext = dbContext;
     }
 
-    public Task<Country[]> GetCountriesAsync()
+    public Task<IQueryable<Country>> GetCountriesAsync()
     {
-        return _dbContext.Countries.ToArrayAsync();
+        return Task.FromResult(_dbContext.Countries.AsQueryable());
+    }
+
+    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, CancellationToken cancellationToken)
+    {
+        var result = _dbContext.Countries.Skip(startIndex);
+
+        if (count.HasValue)
+        {
+            result = result.Take(count.Value);
+        }
+
+        return await result.ToListAsync(cancellationToken);
     }
 }
