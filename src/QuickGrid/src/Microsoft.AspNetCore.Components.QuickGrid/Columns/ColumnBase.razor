@@ -2,7 +2,7 @@
 @namespace Microsoft.AspNetCore.Components.QuickGrid
 @typeparam TGridItem
 @{
-    InternalGridContext.Grid.AddColumn(this);
+    InternalGridContext.Grid.AddColumn(this, IsDefaultSort);
 }
 @code
 {
@@ -14,6 +14,7 @@
     [Parameter] public RenderFragment<ColumnBase<TGridItem>>? HeaderTemplate { get; set; }
     [Parameter] public RenderFragment? ColumnOptions { get; set; }
     [Parameter] public bool? Sortable { get; set; }
+    [Parameter] public SortDirection? IsDefaultSort { get; set; }
 
     public QuickGrid<TGridItem> Grid => InternalGridContext.Grid;
 

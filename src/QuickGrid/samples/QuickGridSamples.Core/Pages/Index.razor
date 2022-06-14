@@ -3,7 +3,7 @@
 
 <div class="grid">
     <QuickGrid ItemsProvider="@itemsProvider" ResizableColumns="true" Pagination="@pagination">
-        <TemplateColumn Title="Code" SortBy="@(_ => _.SortByDescending(c => c.Code))">
+        <TemplateColumn Title="Code" SortBy="@(_ => _.SortByDescending(c => c.Code))" IsDefaultSort="SortDirection.Ascending">
             <img class="flag" src="flags/@(context.Code).svg" />
         </TemplateColumn>
         <PropertyColumn Class="country-name" Property="@(c => c.Name)" Sortable="true" />

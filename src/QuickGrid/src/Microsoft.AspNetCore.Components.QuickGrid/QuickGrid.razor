@@ -114,9 +114,15 @@
     }
 
     // Invoked by descendant columns at a special time during rendering
-    internal void AddColumn(ColumnBase<TGridItem> column)
+    internal void AddColumn(ColumnBase<TGridItem> column, SortDirection? isDefaultSortDirection)
     {
         _columns.Add(column);
+
+        if (_sortByColumn is null && isDefaultSortDirection.HasValue)
+        {
+            _sortByColumn = column;
+            _sortByAscending = isDefaultSortDirection.Value != SortDirection.Descending;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -132,6 +138,14 @@
             _checkColumnOptionsPosition = false;
             _ = _jsModule?.InvokeVoidAsync("checkColumnOptionsPosition", _tableReference);
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // We need to delay the first data query (triggered from OnParametersSetAsync) until after the first
+        // render, so that we have an initial set of columns. If we didn't, it wouldn't be possible to have a
+        // default sort column take effect on the first data query. This is still compatible with prerendering.
+        await Task.Yield();
     }
 
     protected override Task OnParametersSetAsync()
