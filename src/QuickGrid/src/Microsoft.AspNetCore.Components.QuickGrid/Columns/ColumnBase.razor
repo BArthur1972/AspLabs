@@ -18,10 +18,9 @@
 
     public QuickGrid<TGridItem> Grid => InternalGridContext.Grid;
 
-    protected internal virtual IQueryable<TGridItem> ApplyColumnSort(IQueryable<TGridItem> source, bool ascending) => source;
     protected internal abstract void CellContent(RenderTreeBuilder builder, TGridItem item);
     protected internal RenderFragment HeaderContent { get; protected set; }
-    protected virtual bool SupportsSorting() => false;
+    protected virtual bool IsSortableByDefault() => false;
 
     public ColumnBase()
     {
@@ -41,7 +40,7 @@
                 <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
             }
 
-            if (Sortable.HasValue ? Sortable.Value : SupportsSorting())
+            if (Sortable.HasValue ? Sortable.Value : IsSortableByDefault())
             {
                 <button class="col-title" @onclick="@(() => Grid.SortByColumnAsync(this))">
                     <div class="col-title-text">@Title</div>

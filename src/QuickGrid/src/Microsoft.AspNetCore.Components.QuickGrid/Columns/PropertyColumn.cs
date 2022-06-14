@@ -49,7 +49,4 @@ public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>, ISortBuil
 
     protected internal override void CellContent(RenderTreeBuilder builder, TGridItem item)
         => builder.AddContent(0, _cellTextFunc!(item));
-
-    protected internal override IQueryable<TGridItem> ApplyColumnSort(IQueryable<TGridItem> source, bool ascending)
-        => ascending ? source.OrderBy(Property) : source.OrderByDescending(Property);
 }

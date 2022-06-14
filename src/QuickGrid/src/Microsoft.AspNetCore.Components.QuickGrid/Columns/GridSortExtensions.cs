@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public interface ISortBuilderColumn<TGridItem>
 {
-    SortBy<TGridItem>? SortBuilder { get; }
+    public SortBy<TGridItem>? SortBuilder { get; }
 }
 
 public static class GridSortExtensions
@@ -65,25 +66,70 @@ public struct SortBy<T>
         return orderedQueryable;
     }
 
-    public IReadOnlyCollection<(string PropertyName, bool Ascending)> ToPropertyList()
+    internal IReadOnlyCollection<(string PropertyName, SortDirection Direction)> ToPropertyList(bool ascending)
     {
         // TODO: Throw if any of the expressions were not representable as property names
-        var result = new List<(string, bool)>();
-        result.Add((_firstProperty.Item1!, _firstProperty.Item2));
+        var result = new List<(string, SortDirection)>();
+        result.Add((_firstProperty.Item1!, (_firstProperty.Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
         for (var i = 0; i < _count; i++)
         {
-            result.Add((_thenProperties[i].Item1!, _thenProperties[i].Item2));
+            result.Add((_thenProperties[i].Item1!, (_thenProperties[i].Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
         }
 
         return result;
     }
 
+    // Not sure we really want this level of complexity, but it converts expressions like @(c => c.Medals.Gold) to "Medals.Gold"
+    // TODO: Don't do all this expression walking and string building up front. Just store the Expression object. We can do all this
+    // computation later if the developer calls ToPropertyList().
     private static string? ToPropertyName<U, V>(Expression<Func<U, V>> expression)
-        => expression.Body switch
+    {
+        var body = expression.Body as MemberExpression;
+        if (body is null)
         {
-            MemberExpression m => m.Member.Name,
-            _ => null
-        };
+            return null;
+        }
+
+        if (body.Expression is ParameterExpression)
+        {
+            return body.Member.Name;
+        }
+
+        var length = body.Member.Name.Length;
+        var node = body;
+        while (node.Expression is not null)
+        {
+            if (node.Expression is MemberExpression parentMember)
+            {
+                length += parentMember.Member.Name.Length + 1;
+                node = parentMember;
+            }
+            else if (node.Expression is ParameterExpression)
+            {
+                break;
+            }
+            else
+            {
+                // Not representable
+                return null;
+            }
+        }
+
+        return string.Create(length, body, (chars, body) =>
+        {
+            var nextPos = chars.Length;
+            while (body is not null)
+            {
+                nextPos -= body.Member.Name.Length;
+                body.Member.Name.CopyTo(chars.Slice(nextPos));
+                if (nextPos > 0)
+                {
+                    chars[--nextPos] = '.';
+                }
+                body = (body.Expression as MemberExpression)!;
+            }
+        });
+    }
 }
 
 public enum Align

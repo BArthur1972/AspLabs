@@ -11,12 +11,9 @@ public class TemplateColumn<TGridItem> : ColumnBase<TGridItem>, ISortBuilderColu
 
     public SortBy<TGridItem>? SortBuilder => SortBy is null ? null : SortBy(null!);
 
-    protected internal override IQueryable<TGridItem> ApplyColumnSort(IQueryable<TGridItem> source, bool ascending)
-        => SortBy == null ? source : SortBy(source).Apply(source, ascending);
-
     protected internal override void CellContent(RenderTreeBuilder builder, TGridItem item)
         => builder.AddContent(0, ChildContent(item));
 
-    protected override bool SupportsSorting()
+    protected override bool IsSortableByDefault()
         => SortBy is not null;
 }

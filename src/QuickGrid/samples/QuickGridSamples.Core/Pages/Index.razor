@@ -8,9 +8,9 @@
         </TemplateColumn>
         <PropertyColumn Class="country-name" Property="@(c => c.Name)" Sortable="true" />
         <PropertyColumn Property="@(c => c.Medals.Gold)" Sortable="true" Align="Align.Right" />
-        <PropertyColumn Property="@(c => c.Medals.Silver)" Sortable="true" Align="Align.Right" />
-        <PropertyColumn Property="@(c => c.Medals.Bronze)" Sortable="true" Align="Align.Right" />
-        <PropertyColumn Property="@(c => c.Medals.Total)" Sortable="true" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.Medals.Silver)" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.Medals.Bronze)" Align="Align.Right" />
+        <PropertyColumn Property="@(c => c.Medals.Total)" Align="Align.Right" />
     </QuickGrid>
     <Paginator @bind-value="@pagination" />
 </div>
@@ -23,13 +23,8 @@
     {
         itemsProvider = async req =>
         {
-            var sortByColumn = req.SortByColumn switch
-            {
-                ISortBuilderColumn<Country> c => c.SortBuilder.Value.ToPropertyList().Single().PropertyName,
-                _ => "Name"
-            };
-
-            var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortByColumn, req.SortByAscending, req.CancellationToken);
+            var sortBy = req.GetSortByProperties().SingleOrDefault();
+            var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortBy.PropertyName, sortBy.Direction == SortDirection.Ascending, req.CancellationToken);
             return GridItemsProviderResult.From(data, 100);
         };
         pagination.TotalItemCount = 100; // TODO

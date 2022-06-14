@@ -25,6 +25,8 @@ public class LocalDataService : IDataService
             (nameof(Country.Name), false) => _dbContext.Countries.OrderByDescending(c => c.Name),
             (nameof(Country.Code), true) => _dbContext.Countries.OrderBy(c => c.Code),
             (nameof(Country.Code), false) => _dbContext.Countries.OrderByDescending(c => c.Code),
+            ("Medals.Gold", true) => _dbContext.Countries.OrderBy(c => c.Medals.Gold),
+            ("Medals.Gold", false) => _dbContext.Countries.OrderByDescending(c => c.Medals.Gold),
             _ => _dbContext.Countries.OrderByDescending(c => c.Medals.Gold),
         };
 
