@@ -62,7 +62,6 @@ th ::deep .col-options-button {
     bottom: 0;
     right: 0rem;
     cursor: ew-resize;
-    z-index: 1;
 }
 
     .col-width-draghandle:after {
