@@ -17,9 +17,18 @@ public class LocalDataService : IDataService
         return Task.FromResult(_dbContext.Countries.AsQueryable());
     }
 
-    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, CancellationToken cancellationToken)
+    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
-        var result = _dbContext.Countries.Skip(startIndex);
+        var ordered = (sortBy, sortAscending) switch
+        {
+            (nameof(Country.Name), true) => _dbContext.Countries.OrderBy(c => c.Name),
+            (nameof(Country.Name), false) => _dbContext.Countries.OrderByDescending(c => c.Name),
+            (nameof(Country.Code), true) => _dbContext.Countries.OrderBy(c => c.Code),
+            (nameof(Country.Code), false) => _dbContext.Countries.OrderByDescending(c => c.Code),
+            _ => _dbContext.Countries.OrderByDescending(c => c.Medals.Gold),
+        };
+
+        var result = ordered.Skip(startIndex);
 
         if (count.HasValue)
         {

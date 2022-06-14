@@ -4,15 +4,18 @@ public struct GridItemsProviderRequest<TGridItem>
 {
     public int StartIndex { get; }
     public int? Count { get; }
-    public SortBy<TGridItem>? SortBy { get; }
+    public ColumnBase<TGridItem>? SortByColumn { get; }
+    public bool SortByAscending { get; }
     public CancellationToken CancellationToken { get; }
 
-    public GridItemsProviderRequest(
-        int startIndex, int? count, SortBy<TGridItem>? sortBy, CancellationToken cancellationToken)
+    internal GridItemsProviderRequest(
+        int startIndex, int? count, ColumnBase<TGridItem>? sortByColumn, bool sortByAscending,
+        CancellationToken cancellationToken)
     {
         StartIndex = startIndex;
         Count = count;
-        SortBy = sortBy;
+        SortByColumn = sortByColumn;
+        SortByAscending = sortByAscending;
         CancellationToken = cancellationToken;
     }
 }

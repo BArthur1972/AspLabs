@@ -66,6 +66,6 @@ app.Map("/server", app =>
     app.UseEndpoints(e => e.MapFallbackToPage("server/{*path:nonfile}", "/_ServerHost"));
 });
 
-app.MapGet("/api/countries", (IDataService dataService, int startIndex, int? count) => dataService.GetCountriesAsync(startIndex, count, CancellationToken.None));
+app.MapGet("/api/countries", (IDataService dataService, int startIndex, int? count) => dataService.GetCountriesAsync(startIndex, count, "Name", true, CancellationToken.None));
 
 app.Run();

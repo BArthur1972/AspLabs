@@ -93,7 +93,7 @@
             var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
             var count = Pagination?.ItemsPerPage;
             var result = await ItemsProvider(new GridItemsProviderRequest<TGridItem>(
-                startIndex, count, null, thisLoadCts.Token));
+                startIndex, count, _sortByColumn, _sortByAscending, thisLoadCts.Token));
             if (!thisLoadCts.IsCancellationRequested)
             {
                 // See below
@@ -281,7 +281,7 @@
         else if (ItemsProvider is not null)
         {
             var gridRequest = new GridItemsProviderRequest<TGridItem>(
-                request.StartIndex, request.Count, null, request.CancellationToken);
+                request.StartIndex, request.Count, _sortByColumn, _sortByAscending, request.CancellationToken);
             var result = await ItemsProvider(gridRequest);
             _rowCount = result.TotalItemCount;
             return new ItemsProviderResult<(int, TGridItem)>(

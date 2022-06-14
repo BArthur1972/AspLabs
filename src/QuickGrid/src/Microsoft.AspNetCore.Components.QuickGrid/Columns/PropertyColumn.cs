@@ -3,13 +3,16 @@ using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
-public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
+public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>, ISortBuilderColumn<TGridItem>
 {
     private Expression<Func<TGridItem, TProp>>? _cachedProperty;
     private Func<TGridItem, string?>? _cellTextFunc;
+    private SortBy<TGridItem>? _sortBuilder;
 
     [Parameter, EditorRequired] public Expression<Func<TGridItem, TProp>> Property { get; set; } = default!;
     [Parameter] public string? Format { get; set; }
+
+    public SortBy<TGridItem>? SortBuilder => _sortBuilder;
 
     protected override void OnParametersSet()
     {
@@ -34,6 +37,8 @@ public class PropertyColumn<TGridItem, TProp> : ColumnBase<TGridItem>
             {
                 _cellTextFunc = item => compiledPropertyExpression!(item)?.ToString();
             }
+
+            _sortBuilder = SortBy<TGridItem>.Ascending(Property);
         }
 
         if (Title is null && _cachedProperty.Body is MemberExpression memberExpression)

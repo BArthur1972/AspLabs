@@ -3,7 +3,9 @@
 
 <div class="grid">
     <QuickGrid ItemsProvider="@itemsProvider" ResizableColumns="true" Pagination="@pagination">
-        <TemplateColumn><img class="flag" src="flags/@(context.Code).svg" /></TemplateColumn>
+        <TemplateColumn Title="Code" SortBy="@(_ => _.SortByDescending(c => c.Code))">
+            <img class="flag" src="flags/@(context.Code).svg" />
+        </TemplateColumn>
         <PropertyColumn Class="country-name" Property="@(c => c.Name)" Sortable="true" />
         <PropertyColumn Property="@(c => c.Medals.Gold)" Sortable="true" Align="Align.Right" />
         <PropertyColumn Property="@(c => c.Medals.Silver)" Sortable="true" Align="Align.Right" />
@@ -21,7 +23,13 @@
     {
         itemsProvider = async req =>
         {
-            var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, req.CancellationToken);
+            var sortByColumn = req.SortByColumn switch
+            {
+                ISortBuilderColumn<Country> c => c.SortBuilder.Value.ToPropertyList().Single().PropertyName,
+                _ => "Name"
+            };
+
+            var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortByColumn, req.SortByAscending, req.CancellationToken);
             return GridItemsProviderResult.From(data, 100);
         };
         pagination.TotalItemCount = 100; // TODO
