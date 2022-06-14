@@ -1,3 +1,9 @@
+/*
+    TODO: Don't actually used scoped CSS for QuickGrid.razor, because it's so perf-critical we don't even want to
+    add the extra attributes on all the tr/td elements. We can hook everything onto the table.quickgrid class,
+    remembering to be specific about matching closest tr/td only, not any child tables.
+*/
+
 th {
     position: relative; /* So that col-options appears next to it */
 }
@@ -50,26 +56,21 @@ th ::deep .col-options-button {
     right: 0;
 }
 
-.col-gap {
-    visibility: hidden; /* It exists to leave a gap, but otherwise has no content by default */
-}
-
-    .col-gap:last-of-type {
-        display: none;
-    }
-
-[resizable-columns] th.col-gap {
-    visibility: visible;
+.col-width-draghandle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0rem;
     cursor: ew-resize;
+    z-index: 1;
 }
 
-    [resizable-columns] th.col-gap:after {
+    .col-width-draghandle:after {
         content: ' ';
-        border-left: 1px solid silver;
         position: absolute;
-        top: 5px;
-        bottom: 5px;
-        left: 0.5rem;
+        top: 0;
+        bottom: 0;
+        border-left: 1px solid black;
     }
 
 td.col-justify-center {

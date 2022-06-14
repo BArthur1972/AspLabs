@@ -35,11 +35,11 @@ export function checkColumnOptionsPosition(elem) {
 }
 
 function enableColumnResizing(elem) {
-    elem.querySelectorAll('table.quickgrid[resizable-columns] > thead > tr > th.col-gap').forEach(handle => {
+    elem.querySelectorAll('table.quickgrid > thead .col-width-draghandle').forEach(handle => {
         handle.addEventListener('mousedown', evt => {
             evt.preventDefault();
             evt.stopPropagation();
-            const th = handle.previousElementSibling;
+            const th = handle.parentElement;
             const startPageX = evt.pageX;
             const originalColumnWidth = th.offsetWidth;
             const rtlMultiplier = window.getComputedStyle(th, null).getPropertyValue('direction') === 'rtl' ? -1 : 1;

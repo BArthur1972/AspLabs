@@ -17,10 +17,6 @@
     font-weight: bold;
 }
 
-.quickgrid[theme=default] .col-gap {
-    width: 1rem;
-}
-
 .quickgrid[theme=default] .sort-indicator {
     opacity: 0.5;
 }
@@ -37,16 +33,28 @@
     background-color: rgba(128, 128, 128, 0.5);
 }
 
-.quickgrid[theme=default][resizable-columns] th.col-gap:after {
-    border-color: #ccc;
+.quickgrid[theme=default] > thead .col-width-draghandle {
+    right: -0.5rem;
+    width: 1rem;
 }
 
-.quickgrid[theme=default][resizable-columns] th.col-gap:hover {
-    background: rgba(128, 128, 128, 0.2);
-}
+    .quickgrid[theme=default] > thead .col-width-draghandle:hover {
+        background: rgba(128, 128, 128, 0.2);
+    }
 
-    .quickgrid[theme=default][resizable-columns] th.col-gap:hover:after {
+    .quickgrid[theme=default] > thead .col-width-draghandle:active {
+        background: rgba(128, 128, 128, 0.4);
+    }
+
+    .quickgrid[theme=default] > thead .col-width-draghandle:hover:after, .quickgrid[theme=default] > thead .col-width-draghandle:active:after {
         border-color: black;
+    }
+
+    .quickgrid[theme=default] > thead .col-width-draghandle:after {
+        border-color: #ccc;
+        left: 0.5rem;
+        top: 5px;
+        bottom: 5px;
     }
 
 .quickgrid[theme=default] .col-options {

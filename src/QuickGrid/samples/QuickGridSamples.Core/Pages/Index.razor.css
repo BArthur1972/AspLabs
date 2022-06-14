@@ -13,6 +13,6 @@
 }
 
 /* TODO: Make the column gaps into not-physical-columns so this becomes nth-child(2) as you'd expect */
-.grid ::deep .country-name {
+.grid ::deep thead .country-name {
     width: 15rem;
 }
