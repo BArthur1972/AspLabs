@@ -211,8 +211,13 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     private async ValueTask<ItemsProviderResult<(int, TGridItem)>> ProvideVirtualizedItems(ItemsProviderRequest request)
     {
         // Debounce the requests. This eliminates a lot of redundant queries at the cost of slight lag after interactions.
-        // If you wanted, you could try to make it only debounce on the 2nd-and-later request within a cluster.
-        await Task.Delay(20);
+        // TODO: Make this smarter
+        //  - On the very first data request, don't delay at all
+        //  - After that,
+        //    - Use 200ms as the default "short scrolling" debounce period, but if you make a second data load request during
+        //      that time, we switch into "long scrolling" mode where the debounce period is 500ms
+        //    - Switch back to "short scrolling" mode once some request actually completes
+        await Task.Delay(200);
         if (request.CancellationToken.IsCancellationRequested)
         {
             return default;
