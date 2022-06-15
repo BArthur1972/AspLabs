@@ -8,7 +8,7 @@ public class PaginationState
     internal EventCallbackSubscribable<PaginationState> TotalItemCountChanged { get; } = new();
 
     public int ItemsPerPage { get; set; } = 10;
-    public int CurrentPageIndex { get; set; }
+    public int CurrentPageIndex { get; private set; }
     public int? TotalItemCount { get; private set; }
 
     public int? LastPageIndex => TotalItemCount / ItemsPerPage;
@@ -21,9 +21,16 @@ public class PaginationState
     public override int GetHashCode()
         => HashCode.Combine(ItemsPerPage, CurrentPageIndex, TotalItemCount);
 
-    internal async Task SetTotalItemCount(int totalItemCount)
+    public Task SetCurrentPageIndexAsync(int pageIndex)
+    {
+        CurrentPageIndex = pageIndex;
+        return CurrentPageItemsChanged.InvokeCallbacksAsync(this);
+    }
+
+    // Can be internal because this only needs to be called by QuickGrid itself, not any custom pagination UI components.
+    internal Task SetTotalItemCountAsync(int totalItemCount)
     {
         TotalItemCount = totalItemCount;
-        await TotalItemCountChanged.InvokeCallbacksAsync(this);
+        return TotalItemCountChanged.InvokeCallbacksAsync(this);
     }
 }
