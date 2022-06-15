@@ -27,6 +27,5 @@
             var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortBy.PropertyName, sortBy.Direction == SortDirection.Ascending, req.CancellationToken);
             return GridItemsProviderResult.From(data.Items, data.TotalCount);
         };
-        pagination.TotalItemCount = 100; // TODO
     }
 }
