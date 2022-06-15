@@ -12,7 +12,7 @@
         <PropertyColumn Property="@(c => c.Medals.Bronze)" Align="Align.Right" />
         <PropertyColumn Property="@(c => c.Medals.Total)" Align="Align.Right" />
     </QuickGrid>
-    <Paginator @bind-value="@pagination" />
+    <Paginator Value="@pagination" />
 </div>
 
 @code {

@@ -28,10 +28,9 @@
 </div>
 
 @code {
-    private PaginationState _previousValue = default!;
+    private PaginationState? _previousValue;
 
-    [Parameter] public PaginationState Value { get; set; } = new();
-    [Parameter] public EventCallback<PaginationState>? ValueChanged { get; set; } = default!;
+    [Parameter, EditorRequired] public PaginationState Value { get; set; } = default!;
     [Parameter] public RenderFragment? SummaryTemplate { get; set; }
 
     Task GoFirst() => GoToPage(0);
@@ -45,7 +44,8 @@
     Task GoToPage(int pageIndex)
     {
         Value.CurrentPageIndex = pageIndex;
-        return ValueChanged?.InvokeAsync(Value) ?? Task.CompletedTask;
+        Value.NotifyCurrentPageItemsChanged();
+        return Task.CompletedTask;
     }
 
     protected override void OnParametersSet()
@@ -72,6 +72,6 @@
         }
     }
 
-    private void HandleTotalItemCountChanged(object? sender, int newTotalItemCount)
+    private void HandleTotalItemCountChanged(object? sender, EventArgs _)
         => InvokeAsync(StateHasChanged);
 }

@@ -7,7 +7,9 @@ public class PaginationState
     public int? TotalItemCount { get; private set; }
 
     public int? LastPageIndex => TotalItemCount / ItemsPerPage;
-    public event EventHandler<int>? TotalItemCountChanged;
+
+    public event EventHandler? CurrentPageItemsChanged; 
+    public event EventHandler? TotalItemCountChanged;
 
     public IQueryable<T> ApplyPagination<T>(IQueryable<T> source)
     {
@@ -20,7 +22,9 @@ public class PaginationState
     internal void SetTotalItemCount(int totalItemCount)
     {
         TotalItemCount = totalItemCount;
-        CurrentPageIndex = Math.Min(CurrentPageIndex, totalItemCount / ItemsPerPage);
-        TotalItemCountChanged?.Invoke(this, totalItemCount);
+        TotalItemCountChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    internal void NotifyCurrentPageItemsChanged()
+        => CurrentPageItemsChanged?.Invoke(this, EventArgs.Empty);
 }

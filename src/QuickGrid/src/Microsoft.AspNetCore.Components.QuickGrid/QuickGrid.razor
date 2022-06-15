@@ -147,6 +147,9 @@
         // render, so that we have an initial set of columns. If we didn't, it wouldn't be possible to have a
         // default sort column take effect on the first data query. This is still compatible with prerendering.
         await Task.Yield();
+
+        // TODO: Manage this properly; don't discard errors
+        Pagination!.CurrentPageItemsChanged += (_, _) => InvokeAsync(RefreshDataAsync);
     }
 
     protected override Task OnParametersSetAsync()
