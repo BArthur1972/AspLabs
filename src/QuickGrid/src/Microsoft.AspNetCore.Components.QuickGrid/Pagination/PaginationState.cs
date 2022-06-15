@@ -1,15 +1,17 @@
+using Microsoft.AspNetCore.Components.QuickGrid.Infrastructure;
+
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public class PaginationState
 {
+    internal EventCallbackSubscribable<PaginationState> CurrentPageItemsChanged { get; } = new();
+    internal EventCallbackSubscribable<PaginationState> TotalItemCountChanged { get; } = new();
+
     public int ItemsPerPage { get; set; } = 10;
     public int CurrentPageIndex { get; set; }
     public int? TotalItemCount { get; private set; }
 
     public int? LastPageIndex => TotalItemCount / ItemsPerPage;
-
-    public event EventHandler? CurrentPageItemsChanged; 
-    public event EventHandler? TotalItemCountChanged;
 
     public IQueryable<T> ApplyPagination<T>(IQueryable<T> source)
     {
@@ -19,12 +21,9 @@ public class PaginationState
     public override int GetHashCode()
         => HashCode.Combine(ItemsPerPage, CurrentPageIndex, TotalItemCount);
 
-    internal void SetTotalItemCount(int totalItemCount)
+    internal async Task SetTotalItemCount(int totalItemCount)
     {
         TotalItemCount = totalItemCount;
-        TotalItemCountChanged?.Invoke(this, EventArgs.Empty);
+        await TotalItemCountChanged.InvokeCallbacksAsync(this);
     }
-
-    internal void NotifyCurrentPageItemsChanged()
-        => CurrentPageItemsChanged?.Invoke(this, EventArgs.Empty);
 }

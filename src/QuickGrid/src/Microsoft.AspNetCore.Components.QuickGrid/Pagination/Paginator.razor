@@ -15,63 +15,47 @@
             }
         </div>
         <nav role="navigation">
-            <button class="go-first" @onclick="GoFirst" disabled="@(!CanGoBack)" title="Go to first page" aria-title="Go to first page"></button>
-            <button class="go-previous" @onclick="GoPrevious" disabled="@(!CanGoBack)" title="Go to previous page" aria-title="Go to previous page"></button>
+            <button class="go-first" @onclick="GoFirstAsync" disabled="@(!CanGoBack)" title="Go to first page" aria-title="Go to first page"></button>
+            <button class="go-previous" @onclick="GoPreviousAsync" disabled="@(!CanGoBack)" title="Go to previous page" aria-title="Go to previous page"></button>
             <div>
                 Page <strong>@(Value.CurrentPageIndex + 1)</strong>
                 of <strong>@(Value.LastPageIndex + 1)</strong>
             </div>
-            <button class="go-next" @onclick="GoNext" disabled="@(!CanGoForwards)" title="Go to next page" aria-title="Go to next page"></button>
-            <button class="go-last" @onclick="GoLast" disabled="@(!CanGoForwards)" title="Go to last page" aria-title="Go to last page"></button>
+            <button class="go-next" @onclick="GoNextAsync" disabled="@(!CanGoForwards)" title="Go to next page" aria-title="Go to next page"></button>
+            <button class="go-last" @onclick="GoLastAsync" disabled="@(!CanGoForwards)" title="Go to last page" aria-title="Go to last page"></button>
         </nav>
     }
 </div>
 
 @code {
-    private PaginationState? _previousValue;
+    private readonly EventCallbackSubscriber<PaginationState> _totalItemCountChanged;
 
     [Parameter, EditorRequired] public PaginationState Value { get; set; } = default!;
     [Parameter] public RenderFragment? SummaryTemplate { get; set; }
 
-    Task GoFirst() => GoToPage(0);
-    Task GoPrevious() => GoToPage(Value.CurrentPageIndex - 1);
-    Task GoNext() => GoToPage(Value.CurrentPageIndex + 1);
-    Task GoLast() => GoToPage(Value.LastPageIndex.GetValueOrDefault(0));
+    public Paginator()
+    {
+        // The "total item count" handler doesn't need to do anything except cause this component to re-render
+        _totalItemCountChanged = new (new EventCallback<PaginationState>(this, null));
+    }
+
+    Task GoFirstAsync() => GoToPageAsync(0);
+    Task GoPreviousAsync() => GoToPageAsync(Value.CurrentPageIndex - 1);
+    Task GoNextAsync() => GoToPageAsync(Value.CurrentPageIndex + 1);
+    Task GoLastAsync() => GoToPageAsync(Value.LastPageIndex.GetValueOrDefault(0));
 
     bool CanGoBack => Value.CurrentPageIndex > 0;
     bool CanGoForwards => Value.CurrentPageIndex < Value.LastPageIndex;
 
-    Task GoToPage(int pageIndex)
+    Task GoToPageAsync(int pageIndex)
     {
         Value.CurrentPageIndex = pageIndex;
-        Value.NotifyCurrentPageItemsChanged();
-        return Task.CompletedTask;
+        return Value.CurrentPageItemsChanged.InvokeCallbacksAsync(Value);
     }
 
     protected override void OnParametersSet()
-    {
-        if (Value != _previousValue)
-        {
-            Unsubscribe();
-            _previousValue = Value;
-            if (_previousValue is not null)
-            {
-                _previousValue.TotalItemCountChanged += HandleTotalItemCountChanged;
-            }
-        }
-    }
+        => _totalItemCountChanged.SubscribeOrMove(Value.TotalItemCountChanged);
 
     public void Dispose()
-        => Unsubscribe();
-
-    private void Unsubscribe()
-    {
-        if (_previousValue is not null)
-        {
-            _previousValue.TotalItemCountChanged -= HandleTotalItemCountChanged;
-        }
-    }
-
-    private void HandleTotalItemCountChanged(object? sender, EventArgs _)
-        => InvokeAsync(StateHasChanged);
+        => _totalItemCountChanged.Dispose();
 }

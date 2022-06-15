@@ -58,6 +58,7 @@
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
+    private readonly EventCallbackSubscriber<PaginationState> _currentPageItemsChanged;
 
     // This is the final filtered and sorted data to be rendered.
     // We update it asynchronously each time the sort order changes, or if an external
@@ -73,6 +74,7 @@
     {
         _columns = new();
         _internalGridContext = new(this);
+        _currentPageItemsChanged = new(EventCallback.Factory.Create<PaginationState>(this, RefreshDataAsync));
     }
 
     public async Task RefreshDataAsync()
@@ -147,13 +149,12 @@
         // render, so that we have an initial set of columns. If we didn't, it wouldn't be possible to have a
         // default sort column take effect on the first data query. This is still compatible with prerendering.
         await Task.Yield();
-
-        // TODO: Manage this properly; don't discard errors
-        Pagination!.CurrentPageItemsChanged += (_, _) => InvokeAsync(RefreshDataAsync);
     }
 
     protected override Task OnParametersSetAsync()
     {
+        _currentPageItemsChanged.SubscribeOrMove(Pagination?.CurrentPageItemsChanged);
+
         bool dataSourceHasChanged;
 
         if (Items is not null)
@@ -317,6 +318,8 @@
 
     public async ValueTask DisposeAsync()
     {
+        _currentPageItemsChanged.Dispose();
+
         try
         {
             if (_jsEventDisposable is not null)
