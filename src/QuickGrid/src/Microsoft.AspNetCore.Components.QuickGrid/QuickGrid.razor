@@ -105,17 +105,17 @@
                 _rowCount = result.TotalItemCount; // TODO: Need to distinguish "total row count" from "rows currently being rendered (when paginated)" as ARIA wants the former when virtualized and latter when not
                 Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
                 _pendingDataLoadCancellationTokenSource = null;
-
-                // Depending on whether the RefreshDataAsync is being chained into an event handler that in turn will
-                // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
-                // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
-                _ = StateHasChangedDeferredAsync(); // Not expected to throw
             }
         }
         else if (Items is not null)
         {
             throw new NotImplementedException("IQueryable was removed. TODO: Put back");
         }
+
+        // Depending on whether the RefreshDataAsync is being chained into an event handler that in turn will
+        // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
+        // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
+        _ = StateHasChangedDeferredAsync(); // Not expected to throw
     }
 
     // Invoked by descendant columns at a special time during rendering
