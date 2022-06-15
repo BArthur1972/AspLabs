@@ -17,7 +17,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     [Parameter] public float ItemSize { get; set; } = 50;
     [Parameter] public Func<TGridItem, object> ItemKey { get; set; } = x => x;
     [Parameter] public PaginationState? Pagination { get; set; }
-    [Inject] private IJSRuntime JS { get; set; }
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private Virtualize<(int, TGridItem)>? _virtualizeComponent;
     private List<ColumnBase<TGridItem>> _columns;
@@ -31,6 +31,8 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
     private readonly EventCallbackSubscriber<PaginationState> _currentPageItemsChanged;
+    private readonly RenderFragment _renderColumnHeaders; // Cache of method->delegate conversion
+    private readonly RenderFragment _renderNonVirtualizedRows; // Cache of method->delegate conversion
 
     // This is the final filtered and sorted data to be rendered.
     // We update it asynchronously each time the sort order changes, or if an external
@@ -47,6 +49,8 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         _columns = new();
         _internalGridContext = new(this);
         _currentPageItemsChanged = new(EventCallback.Factory.Create<PaginationState>(this, RefreshDataAsync));
+        _renderColumnHeaders = RenderColumnHeaders;
+        _renderNonVirtualizedRows = RenderNonVirtualizedRows;
     }
 
     public async Task RefreshDataAsync()

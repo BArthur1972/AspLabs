@@ -10,7 +10,7 @@
         <table class="@GridClass()" theme="@Theme" aria-rowcount="@(_rowCount + 1)" @ref="_tableReference" @onclosecolumnoptions="CloseColumnOptions">
             <thead>
                 <tr>
-                    @RenderColumnHeaders
+                    @_renderColumnHeaders
                 </tr>
             </thead>
             <tbody>
@@ -25,7 +25,7 @@
                 }
                 else
                 {
-                    @RenderNonVirtualizedRows
+                    @_renderNonVirtualizedRows
                 }
             </tbody>
         </table>
