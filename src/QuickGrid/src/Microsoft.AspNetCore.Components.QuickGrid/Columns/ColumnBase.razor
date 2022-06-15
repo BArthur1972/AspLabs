@@ -15,6 +15,7 @@
     [Parameter] public RenderFragment? ColumnOptions { get; set; }
     [Parameter] public bool? Sortable { get; set; }
     [Parameter] public SortDirection? IsDefaultSort { get; set; }
+    [Parameter] public RenderFragment<PlaceholderContext>? PlaceholderTemplate { get; set; }
 
     public QuickGrid<TGridItem> Grid => InternalGridContext.Grid;
 
@@ -58,6 +59,15 @@
             {
                 <button class="col-options-button" @onclick="@(() => Grid.ShowColumnOptions(this))"></button>
             }
+        }
+    }
+
+    internal void RenderPlaceholderContent(RenderTreeBuilder __builder, PlaceholderContext placeholderContext)
+    {
+        // Blank if no placeholder template was supplied, as it's enough to style with CSS by default
+        if (PlaceholderTemplate is not null)
+        {
+            @PlaceholderTemplate(placeholderContext)
         }
     }
 }

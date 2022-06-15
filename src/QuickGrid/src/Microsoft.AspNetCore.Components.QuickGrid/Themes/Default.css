@@ -74,3 +74,8 @@
     border-color: #ddd;
     border-radius: 0.3rem;
 }
+
+.quickgrid[theme=default] > tbody > tr > td.grid-cell-placeholder:after {
+    content: '\2026';
+    opacity: 0.75;
+}

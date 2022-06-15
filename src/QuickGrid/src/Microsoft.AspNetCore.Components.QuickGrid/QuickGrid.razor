@@ -21,10 +21,11 @@
                 @if (Virtualize)
                 {
                     <Virtualize @ref="@_virtualizeComponent"
-                            TItem="(int RowIndex, TGridItem Data)"
-                            ItemSize="@ItemSize"
-                            ItemsProvider="@ProvideVirtualizedItems"
-                            ItemContent="@(item => builder => RenderRow(builder, item.RowIndex, item.Data))" />
+                        TItem="(int RowIndex, TGridItem Data)"
+                        ItemSize="@ItemSize"
+                        ItemsProvider="@ProvideVirtualizedItems"
+                        ItemContent="@(item => builder => RenderRow(builder, item.RowIndex, item.Data))"
+                        Placeholder="@(placeholderContext => builder => RenderPlaceholderRow(builder, placeholderContext))" />
                 }
                 else
                 {
@@ -213,6 +214,16 @@
             @foreach (var col in _columns)
             {
                 <td class="@ColumnClass(col)" @key="@col">@{ col.CellContent(__builder, item); }</td>
+            }
+        </tr>
+    }
+
+    private void RenderPlaceholderRow(RenderTreeBuilder __builder, PlaceholderContext placeholderContext)
+    {
+        <tr aria-rowindex="@(placeholderContext.Index + 1)">
+            @foreach (var col in _columns)
+            {
+                <td class="grid-cell-placeholder @ColumnClass(col)" @key="@col">@{ col.RenderPlaceholderContent(__builder, placeholderContext); }</td>
             }
         </tr>
     }
