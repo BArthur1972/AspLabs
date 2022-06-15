@@ -1,7 +1,7 @@
 @page "/virtualized"
 @inject IDataService DataService
 
-<div class="grid">
+<div class="grid" tabindex="-1">
     <QuickGrid ItemsProvider="@itemsProvider" Virtualize="true" ItemSize="30">
         <TemplateColumn Title="Code" SortBy="@(_ => _.SortByDescending(c => c.Code))" IsDefaultSort="SortDirection.Ascending">
             <img class="flag" src="flags/@(context.Code).svg" />
