@@ -65,7 +65,7 @@
     // component like Paginator tells us to do so. We only render after this has been updated.
     private ICollection<TGridItem> _currentViewItems = Array.Empty<TGridItem>();
     private int _lastRefreshedPaginationStateHash;
-    private object _lastAssignedItemsOrProvider;
+    private object? _lastAssignedItemsOrProvider;
     private CancellationTokenSource? _pendingDataLoadCancellationTokenSource;
 
     private bool _needsDeferredRender;
@@ -81,6 +81,7 @@
     {
         _pendingDataLoadCancellationTokenSource?.Cancel();
         var thisLoadCts = _pendingDataLoadCancellationTokenSource = new CancellationTokenSource();
+        _lastRefreshedPaginationStateHash = Pagination?.GetHashCode() ?? 0;
 
         // Querying may be expensive (especially if it's not in-memory data), so we only update
         // the currently-rendered row data when explicitly asked, or when an event occurs that
