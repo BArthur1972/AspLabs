@@ -212,12 +212,12 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     {
         // Debounce the requests. This eliminates a lot of redundant queries at the cost of slight lag after interactions.
         // TODO: Make this smarter
-        //  - On the very first data request, don't delay at all
+        //  - On the very first data request, don't delay at all (otherwise we're hurting prerendering)
         //  - After that,
         //    - Use 200ms as the default "short scrolling" debounce period, but if you make a second data load request during
         //      that time, we switch into "long scrolling" mode where the debounce period is 500ms
         //    - Switch back to "short scrolling" mode once some request actually completes
-        await Task.Delay(200);
+        await Task.Delay(100);
         if (request.CancellationToken.IsCancellationRequested)
         {
             return default;
