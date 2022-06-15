@@ -12,8 +12,9 @@ internal class WebApiDataService : IDataService
         _httpClient = httpClient;
     }
 
-    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, CancellationToken cancellationToken)
+    public async Task<(ICollection<Country> Items, int TotalCount)> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
-        return await _httpClient.GetFromJsonAsync<Country[]>($"/api/countries?startIndex={startIndex}&count={count}");
+        // TODO: Also pass sorting params
+        return await _httpClient.GetFromJsonAsync<(Country[], int)>($"/api/countries?startIndex={startIndex}&count={count}");
     }
 }

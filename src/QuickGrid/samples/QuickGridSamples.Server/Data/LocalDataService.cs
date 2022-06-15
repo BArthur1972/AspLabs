@@ -17,7 +17,7 @@ public class LocalDataService : IDataService
         return Task.FromResult(_dbContext.Countries.AsQueryable());
     }
 
-    public async Task<ICollection<Country>> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
+    public async Task<(ICollection<Country>, int)> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
         var ordered = (sortBy, sortAscending) switch
         {
@@ -37,6 +37,6 @@ public class LocalDataService : IDataService
             result = result.Take(count.Value);
         }
 
-        return await result.ToListAsync(cancellationToken);
+        return (await result.ToListAsync(cancellationToken), await ordered.CountAsync());
     }
 }
