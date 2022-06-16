@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Text;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
@@ -20,39 +19,40 @@ public static class GridSortExtensions
 public struct SortBy<T>
 {
     private int _count;
+    private const string ExpressionNotRepresentableMessage = "The supplied expression can't be represented as a property name for sorting. Only simple member expressions, such as @(x => x.SomeProperty), can be converted to property names.";
 
     private Func<IQueryable<T>, bool, IOrderedQueryable<T>> _first;
     private Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>>[] _then = new Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>>[10];
 
-    private (string?, bool) _firstProperty;
-    private (string?, bool)[] _thenProperties = new (string?, bool)[10];
+    private (LambdaExpression, bool) _firstExpression;
+    private (LambdaExpression, bool)[] _thenExpressions = new (LambdaExpression, bool)[10];
 
-    internal SortBy(Func<IQueryable<T>, bool, IOrderedQueryable<T>> first, (string?, bool) firstProperty)
+    internal SortBy(Func<IQueryable<T>, bool, IOrderedQueryable<T>> first, (LambdaExpression, bool) firstExpression)
     {
         _first = first;
-        _firstProperty = firstProperty;
+        _firstExpression = firstExpression;
         _count = 0;
     }
 
     public static SortBy<T> Ascending<U>(Expression<Func<T, U>> expression)
         => new SortBy<T>((queryable, asc) => asc ? queryable.OrderBy(expression) : queryable.OrderByDescending(expression),
-            (ToPropertyName(expression), true));
+            (expression, true));
 
     public static SortBy<T> Descending<U>(Expression<Func<T, U>> expression)
         => new SortBy<T>((queryable, asc) => asc ? queryable.OrderByDescending(expression) : queryable.OrderBy(expression),
-            (ToPropertyName(expression), false));
+            (expression, false));
 
     public SortBy<T> ThenAscending<U>(Expression<Func<T, U>> expression)
     {
         _then[_count++] = (queryable, asc) => asc ? queryable.ThenBy(expression) : queryable.ThenByDescending(expression);
-        _thenProperties[_count] = (ToPropertyName(expression), true);
+        _thenExpressions[_count] = (expression, true);
         return this;
     }
 
     public SortBy<T> ThenDescending<U>(Expression<Func<T, U>> expression)
     {
         _then[_count++] = (queryable, asc) => asc ? queryable.ThenByDescending(expression) : queryable.ThenBy(expression);
-        _thenProperties[_count] = (ToPropertyName(expression), false);
+        _thenExpressions[_count] = (expression, false);
         return this;
     }
 
@@ -68,26 +68,23 @@ public struct SortBy<T>
 
     internal IReadOnlyCollection<(string PropertyName, SortDirection Direction)> ToPropertyList(bool ascending)
     {
-        // TODO: Throw if any of the expressions were not representable as property names
         var result = new List<(string, SortDirection)>();
-        result.Add((_firstProperty.Item1!, (_firstProperty.Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
+        result.Add((ToPropertyName(_firstExpression.Item1), (_firstExpression.Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
         for (var i = 0; i < _count; i++)
         {
-            result.Add((_thenProperties[i].Item1!, (_thenProperties[i].Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
+            result.Add((ToPropertyName(_thenExpressions[i].Item1), (_thenExpressions[i].Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
         }
 
         return result;
     }
 
     // Not sure we really want this level of complexity, but it converts expressions like @(c => c.Medals.Gold) to "Medals.Gold"
-    // TODO: Don't do all this expression walking and string building up front. Just store the Expression object. We can do all this
-    // computation later if the developer calls ToPropertyList().
-    private static string? ToPropertyName<U, V>(Expression<Func<U, V>> expression)
+    private static string ToPropertyName(LambdaExpression expression)
     {
         var body = expression.Body as MemberExpression;
         if (body is null)
         {
-            return null;
+            throw new ArgumentException(ExpressionNotRepresentableMessage);
         }
 
         if (body.Expression is ParameterExpression)
@@ -110,8 +107,7 @@ public struct SortBy<T>
             }
             else
             {
-                // Not representable
-                return null;
+                throw new ArgumentException(ExpressionNotRepresentableMessage);
             }
         }
 
