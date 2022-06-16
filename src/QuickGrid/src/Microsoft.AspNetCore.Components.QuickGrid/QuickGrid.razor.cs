@@ -17,6 +17,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     [Parameter] public float ItemSize { get; set; } = 50;
     [Parameter] public Func<TGridItem, object> ItemKey { get; set; } = x => x;
     [Parameter] public PaginationState? Pagination { get; set; }
+    [Inject] private IServiceProvider Services { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private Virtualize<(int, TGridItem)>? _virtualizeComponent;
@@ -30,6 +31,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
     private InternalGridContext<TGridItem> _internalGridContext;
+    private IAsyncQueryExecutor? _asyncQueryExecutor;
     private readonly EventCallbackSubscriber<PaginationState> _currentPageItemsChanged;
     private readonly RenderFragment _renderColumnHeaders; // Cache of method->delegate conversion
     private readonly RenderFragment _renderNonVirtualizedRows; // Cache of method->delegate conversion
@@ -99,13 +101,14 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         }
         else if (Items is not null)
         {
-            var totalItemCount = Items.Count();
+            var totalItemCount = _asyncQueryExecutor is null ? Items.Count() : await _asyncQueryExecutor.CountAsync(Items);
             var result = request.ApplySorting(Items).Skip(request.StartIndex);
             if (request.Count.HasValue)
             {
                 result = result.Take(request.Count.Value);
             }
-            return GridItemsProviderResult.From(result.ToArray(), totalItemCount);
+            var resultArray = _asyncQueryExecutor is null ? result.ToArray() : await _asyncQueryExecutor.ToArrayAsync(result);
+            return GridItemsProviderResult.From(resultArray, totalItemCount);
         }
         else
         {
@@ -175,6 +178,11 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
             // It's legal to supply neither Items nor ItemsProvider, because that's convenient when you're acquiring
             // Items asynchronously but don't have it yet. In this case we just render zero items.
             dataSourceHasChanged = _lastAssignedItemsOrProvider is not null;
+        }
+
+        if (dataSourceHasChanged)
+        {
+            _asyncQueryExecutor = AsyncQueryExecutorSupplier.GetAsyncQueryExecutor(Services, Items);
         }
 
         var mustRefreshData = dataSourceHasChanged

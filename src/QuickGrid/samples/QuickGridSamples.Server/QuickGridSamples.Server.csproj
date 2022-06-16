@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter\Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter.csproj" />
     <ProjectReference Include="..\QuickGridSamples.Core\QuickGridSamples.Core.csproj" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.0" />

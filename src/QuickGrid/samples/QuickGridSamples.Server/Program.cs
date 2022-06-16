@@ -10,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<IDataService, LocalDataService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=app.db"));
+builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 var app = builder.Build();
 SeedData.EnsureSeeded(app.Services);

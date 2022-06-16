@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGridSamples.WebAssembl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickGridSamples.Server", "samples\QuickGridSamples.Server\QuickGridSamples.Server.csproj", "{D6A9F84D-07D2-4BE5-BE70-50230C9CE280}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter", "src\Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter\Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter.csproj", "{BDEA56A6-2940-4274-AE79-BA1550171954}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{D6A9F84D-07D2-4BE5-BE70-50230C9CE280}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6A9F84D-07D2-4BE5-BE70-50230C9CE280}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6A9F84D-07D2-4BE5-BE70-50230C9CE280}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDEA56A6-2940-4274-AE79-BA1550171954}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDEA56A6-2940-4274-AE79-BA1550171954}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDEA56A6-2940-4274-AE79-BA1550171954}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDEA56A6-2940-4274-AE79-BA1550171954}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{E388368A-5A7E-4E6B-A0B6-9A56FCE79974} = {8CE6BA28-B2D9-43D6-A1ED-1DE3CF5A1372}
 		{848D1378-0889-47BA-A591-1B1F4EE6F09B} = {8CE6BA28-B2D9-43D6-A1ED-1DE3CF5A1372}
 		{D6A9F84D-07D2-4BE5-BE70-50230C9CE280} = {8CE6BA28-B2D9-43D6-A1ED-1DE3CF5A1372}
+		{BDEA56A6-2940-4274-AE79-BA1550171954} = {A49CC7EC-8E67-4459-9644-250168A506B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9EFF0B9-F341-4C6C-B543-AD97D127ED98}
