@@ -25,17 +25,17 @@ nav button {
     }
 
 .go-first:after {
-    content: '⇤';
+    content: '\21E4'; /* ⇤ */
 }
 
 .go-previous:after {
-    content: '←';
+    content: '\2190'; /* ← */
 }
 
 .go-next:after {
-    content: '→';
+    content: '\2192'; /* → */
 }
 
 .go-last:after {
-    content: '⇥';
+    content: '\21E5'; /* ⇥ */
 }
