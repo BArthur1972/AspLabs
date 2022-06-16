@@ -2,77 +2,97 @@ using System.Linq.Expressions;
 
 namespace Microsoft.AspNetCore.Components.QuickGrid;
 
-public interface ISortBuilderColumn<TGridItem>
+public class GridSort<T>
 {
-    public SortBy<TGridItem>? SortBuilder { get; }
-}
-
-public static class GridSortExtensions
-{
-    public static SortBy<T> SortByAscending<T, U>(this IEnumerable<T> _, Expression<Func<T, U>> keySelector)
-        => SortBy<T>.Ascending(keySelector);
-
-    public static SortBy<T> SortByDescending<T, U>(this IEnumerable<T> _, Expression<Func<T, U>> keySelector)
-        => SortBy<T>.Descending(keySelector);
-}
-
-public struct SortBy<T>
-{
-    private int _count;
     private const string ExpressionNotRepresentableMessage = "The supplied expression can't be represented as a property name for sorting. Only simple member expressions, such as @(x => x.SomeProperty), can be converted to property names.";
 
     private Func<IQueryable<T>, bool, IOrderedQueryable<T>> _first;
-    private Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>>[] _then = new Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>>[10];
+    private List<Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>>>? _then;
 
     private (LambdaExpression, bool) _firstExpression;
-    private (LambdaExpression, bool)[] _thenExpressions = new (LambdaExpression, bool)[10];
+    private List<(LambdaExpression, bool)>? _thenExpressions;
 
-    internal SortBy(Func<IQueryable<T>, bool, IOrderedQueryable<T>> first, (LambdaExpression, bool) firstExpression)
+    private IReadOnlyCollection<(string PropertyName, SortDirection Direction)>? _cachedPropertyListAscending;
+    private IReadOnlyCollection<(string PropertyName, SortDirection Direction)>? _cachedPropertyListDescending;
+
+    internal GridSort(Func<IQueryable<T>, bool, IOrderedQueryable<T>> first, (LambdaExpression, bool) firstExpression)
     {
         _first = first;
         _firstExpression = firstExpression;
-        _count = 0;
+        _then = default;
+        _thenExpressions = default;
     }
 
-    public static SortBy<T> Ascending<U>(Expression<Func<T, U>> expression)
-        => new SortBy<T>((queryable, asc) => asc ? queryable.OrderBy(expression) : queryable.OrderByDescending(expression),
+    public static GridSort<T> ByAscending<U>(Expression<Func<T, U>> expression)
+        => new GridSort<T>((queryable, asc) => asc ? queryable.OrderBy(expression) : queryable.OrderByDescending(expression),
             (expression, true));
 
-    public static SortBy<T> Descending<U>(Expression<Func<T, U>> expression)
-        => new SortBy<T>((queryable, asc) => asc ? queryable.OrderByDescending(expression) : queryable.OrderBy(expression),
+    public static GridSort<T> ByDescending<U>(Expression<Func<T, U>> expression)
+        => new GridSort<T>((queryable, asc) => asc ? queryable.OrderByDescending(expression) : queryable.OrderBy(expression),
             (expression, false));
 
-    public SortBy<T> ThenAscending<U>(Expression<Func<T, U>> expression)
+    public GridSort<T> ThenAscending<U>(Expression<Func<T, U>> expression)
     {
-        _then[_count++] = (queryable, asc) => asc ? queryable.ThenBy(expression) : queryable.ThenByDescending(expression);
-        _thenExpressions[_count] = (expression, true);
+        _then ??= new();
+        _thenExpressions ??= new();
+        _then.Add((queryable, asc) => asc ? queryable.ThenBy(expression) : queryable.ThenByDescending(expression));
+        _thenExpressions.Add((expression, true));
+        _cachedPropertyListAscending = null;
+        _cachedPropertyListDescending = null;
         return this;
     }
 
-    public SortBy<T> ThenDescending<U>(Expression<Func<T, U>> expression)
+    public GridSort<T> ThenDescending<U>(Expression<Func<T, U>> expression)
     {
-        _then[_count++] = (queryable, asc) => asc ? queryable.ThenByDescending(expression) : queryable.ThenBy(expression);
-        _thenExpressions[_count] = (expression, false);
+        _then ??= new();
+        _thenExpressions ??= new();
+        _then.Add((queryable, asc) => asc ? queryable.ThenByDescending(expression) : queryable.ThenBy(expression));
+        _thenExpressions.Add((expression, false));
+        _cachedPropertyListAscending = null;
+        _cachedPropertyListDescending = null;
         return this;
     }
 
     internal IOrderedQueryable<T> Apply(IQueryable<T> queryable, bool ascending)
     {
         var orderedQueryable = _first(queryable, ascending);
-        for (var i = 0; i < _count; i++)
+
+        if (_then is not null)
         {
-            orderedQueryable = _then[i](orderedQueryable, ascending);
+            foreach (var clause in _then)
+            {
+                orderedQueryable = clause(orderedQueryable, ascending);
+            }
         }
+
         return orderedQueryable;
     }
 
     internal IReadOnlyCollection<(string PropertyName, SortDirection Direction)> ToPropertyList(bool ascending)
     {
+        if (ascending)
+        {
+            _cachedPropertyListAscending ??= BuildPropertyList(ascending: true);
+            return _cachedPropertyListAscending;
+        }
+        else
+        {
+            _cachedPropertyListDescending ??= BuildPropertyList(ascending: false);
+            return _cachedPropertyListDescending;
+        }
+    }
+
+    private IReadOnlyCollection<(string PropertyName, SortDirection Direction)> BuildPropertyList(bool ascending)
+    {
         var result = new List<(string, SortDirection)>();
         result.Add((ToPropertyName(_firstExpression.Item1), (_firstExpression.Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
-        for (var i = 0; i < _count; i++)
+
+        if (_thenExpressions is not null)
         {
-            result.Add((ToPropertyName(_thenExpressions[i].Item1), (_thenExpressions[i].Item2 ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
+            foreach (var (thenLambda, thenAscending) in _thenExpressions)
+            {
+                result.Add((ToPropertyName(thenLambda), (thenAscending ^ ascending) ? SortDirection.Descending : SortDirection.Ascending));
+            }
         }
 
         return result;
@@ -126,11 +146,4 @@ public struct SortBy<T>
             }
         });
     }
-}
-
-public enum Align
-{
-    Left,
-    Center,
-    Right,
 }

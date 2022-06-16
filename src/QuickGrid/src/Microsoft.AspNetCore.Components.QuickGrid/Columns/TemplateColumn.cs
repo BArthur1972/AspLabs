@@ -7,9 +7,9 @@ public class TemplateColumn<TGridItem> : ColumnBase<TGridItem>, ISortBuilderColu
     private readonly static RenderFragment<TGridItem> EmptyChildContent = _ => builder => { };
 
     [Parameter] public RenderFragment<TGridItem> ChildContent { get; set; } = EmptyChildContent;
-    [Parameter] public Func<IEnumerable<TGridItem>, SortBy<TGridItem>>? SortBy { get; set; }
+    [Parameter] public GridSort<TGridItem>? SortBy { get; set; }
 
-    public SortBy<TGridItem>? SortBuilder => SortBy is null ? null : SortBy(null!);
+    GridSort<TGridItem>? ISortBuilderColumn<TGridItem>.SortBuilder => SortBy;
 
     protected internal override void CellContent(RenderTreeBuilder builder, TGridItem item)
         => builder.AddContent(0, ChildContent(item));
