@@ -68,6 +68,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         {
             // This will call back into ProvideVirtualizedItems
             await _virtualizeComponent.RefreshDataAsync();
+            Pagination?.SetTotalItemCountAsync(_rowCount);
             _pendingDataLoadCancellationTokenSource = null;
         }
         else
@@ -91,6 +92,35 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
         // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
         _ = StateHasChangedDeferredAsync(); // Not expected to throw
+    }
+
+    private async ValueTask<ItemsProviderResult<(int, TGridItem)>> ProvideVirtualizedItems(ItemsProviderRequest request)
+    {
+        // Debounce the requests. This eliminates a lot of redundant queries at the cost of slight lag after interactions.
+        // TODO: Make this smarter
+        //  - On the very first data request, don't delay at all (otherwise we're hurting prerendering)
+        //  - After that,
+        //    - Use 200ms as the default "short scrolling" debounce period, but if you make a second data load request during
+        //      that time, we switch into "long scrolling" mode where the debounce period is 500ms
+        //    - Switch back to "short scrolling" mode once some request actually completes
+        await Task.Delay(100);
+        if (request.CancellationToken.IsCancellationRequested)
+        {
+            return default;
+        }
+
+        var providerRequest = new GridItemsProviderRequest<TGridItem>(
+            request.StartIndex, request.Count, _sortByColumn, _sortByAscending, request.CancellationToken);
+        var providerResult = await ResolveItemsRequestAsync(providerRequest);
+        if (!request.CancellationToken.IsCancellationRequested)
+        {
+            _rowCount = providerResult.TotalItemCount;
+            return new ItemsProviderResult<(int, TGridItem)>(
+                 items: providerResult.Items.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
+                 totalItemCount: _rowCount);
+        }
+
+        return default;
     }
 
     private async ValueTask<GridItemsProviderResult<TGridItem>> ResolveItemsRequestAsync(GridItemsProviderRequest<TGridItem> request)
@@ -235,46 +265,6 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         _displayOptionsForColumn = column;
         _checkColumnOptionsPosition = true;
         StateHasChanged();
-    }
-
-    private async ValueTask<ItemsProviderResult<(int, TGridItem)>> ProvideVirtualizedItems(ItemsProviderRequest request)
-    {
-        // Debounce the requests. This eliminates a lot of redundant queries at the cost of slight lag after interactions.
-        // TODO: Make this smarter
-        //  - On the very first data request, don't delay at all (otherwise we're hurting prerendering)
-        //  - After that,
-        //    - Use 200ms as the default "short scrolling" debounce period, but if you make a second data load request during
-        //      that time, we switch into "long scrolling" mode where the debounce period is 500ms
-        //    - Switch back to "short scrolling" mode once some request actually completes
-        await Task.Delay(100);
-        if (request.CancellationToken.IsCancellationRequested)
-        {
-            return default;
-        }
-
-        if (Items is not null)
-        {
-            var records = _currentNonVirtualizedViewItems.Skip(request.StartIndex).Take(request.Count).AsEnumerable();
-            _rowCount = Items.Count();
-            var result = new ItemsProviderResult<(int, TGridItem)>(
-                items: records.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
-                totalItemCount: _rowCount);
-            return result;
-        }
-        else if (ItemsProvider is not null)
-        {
-            var gridRequest = new GridItemsProviderRequest<TGridItem>(
-                request.StartIndex, request.Count, _sortByColumn, _sortByAscending, request.CancellationToken);
-            var result = await ItemsProvider(gridRequest);
-            _rowCount = result.TotalItemCount;
-            return new ItemsProviderResult<(int, TGridItem)>(
-                items: result.Items.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
-                totalItemCount: _rowCount);
-        }
-        else
-        {
-            return new ItemsProviderResult<(int, TGridItem)>(Enumerable.Empty<(int, TGridItem)>(), 0);
-        }
     }
 
     public async ValueTask DisposeAsync()
