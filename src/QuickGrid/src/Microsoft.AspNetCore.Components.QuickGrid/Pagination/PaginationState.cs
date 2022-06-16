@@ -7,7 +7,7 @@ public class PaginationState
     public int ItemsPerPage { get; set; } = 10;
     public int CurrentPageIndex { get; private set; }
     public int? TotalItemCount { get; private set; }
-    public int? LastPageIndex => TotalItemCount / ItemsPerPage;
+    public int? LastPageIndex => (TotalItemCount - 1) / ItemsPerPage;
 
     internal EventCallbackSubscribable<PaginationState> CurrentPageItemsChanged { get; } = new();
     internal EventCallbackSubscribable<PaginationState> TotalItemCountChanged { get; } = new();

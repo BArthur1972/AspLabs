@@ -68,12 +68,13 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
             await _virtualizeComponent.RefreshDataAsync();
             _pendingDataLoadCancellationTokenSource = null;
         }
-        else if (ItemsProvider is not null)
+        else
         {
             var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
             var count = Pagination?.ItemsPerPage;
-            var result = await ItemsProvider(new GridItemsProviderRequest<TGridItem>(
-                startIndex, count, _sortByColumn, _sortByAscending, thisLoadCts.Token));
+            var request = new GridItemsProviderRequest<TGridItem>(
+                startIndex, count, _sortByColumn, _sortByAscending, thisLoadCts.Token);
+            var result = await ResolveItemsRequestAsync(request);
             if (!thisLoadCts.IsCancellationRequested)
             {
                 // See below
@@ -83,15 +84,33 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
                 _pendingDataLoadCancellationTokenSource = null;
             }
         }
-        else if (Items is not null)
-        {
-            throw new NotImplementedException("IQueryable was removed. TODO: Put back");
-        }
 
         // Depending on whether the RefreshDataAsync is being chained into an event handler that in turn will
         // re-render the grid anyway, we may or may not need to queue a re-render here. To avoid redundant
         // re-rendering, we'll defer the "data has loaded" re-rendering until after a Task.Yield.
         _ = StateHasChangedDeferredAsync(); // Not expected to throw
+    }
+
+    private async ValueTask<GridItemsProviderResult<TGridItem>> ResolveItemsRequestAsync(GridItemsProviderRequest<TGridItem> request)
+    {
+        if (ItemsProvider is not null)
+        {
+            return await ItemsProvider(request);
+        }
+        else if (Items is not null)
+        {
+            var totalItemCount = Items.Count();
+            var result = request.ApplySorting(Items).Skip(request.StartIndex);
+            if (request.Count.HasValue)
+            {
+                result = result.Take(request.Count.Value);
+            }
+            return GridItemsProviderResult.From(result.ToArray(), totalItemCount);
+        }
+        else
+        {
+            return GridItemsProviderResult.From(Array.Empty<TGridItem>(), 0);
+        }
     }
 
     // Invoked by descendant columns at a special time during rendering
