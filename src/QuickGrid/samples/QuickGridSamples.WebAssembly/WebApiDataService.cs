@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.QuickGrid;
 using QuickGridSamples.Core.Models;
 
 namespace QuickGridSamples.WebAssembly;
@@ -6,15 +8,23 @@ namespace QuickGridSamples.WebAssembly;
 internal class WebApiDataService : IDataService
 {
     private readonly HttpClient _httpClient;
+    private readonly NavigationManager _navigationManager;
 
-    public WebApiDataService(HttpClient httpClient)
+    public WebApiDataService(HttpClient httpClient, NavigationManager navigationManager)
     {
         _httpClient = httpClient;
+        _navigationManager = navigationManager;
     }
 
-    public async Task<(ICollection<Country> Items, int TotalCount)> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
+    public async Task<GridItemsProviderResult<Country>> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
-        // TODO: Also pass sorting params
-        return await _httpClient.GetFromJsonAsync<(Country[], int)>($"/api/countries?startIndex={startIndex}&count={count}");
+        var url = _navigationManager.GetUriWithQueryParameters("/api/countries", new Dictionary<string, object>
+        {
+            { "startIndex", startIndex },
+            { "count", count },
+            { "sortBy", sortBy },
+            { "sortAscending", sortAscending },
+        });
+        return await _httpClient.GetFromJsonAsync<GridItemsProviderResult<Country>>(url);
     }
 }

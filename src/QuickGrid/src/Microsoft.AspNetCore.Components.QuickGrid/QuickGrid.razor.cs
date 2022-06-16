@@ -172,7 +172,9 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         }
         else
         {
-            throw new InvalidOperationException($"{nameof(QuickGrid)} requires one of {nameof(Items)} or {nameof(ItemsProvider)}, but neither were specified.");
+            // It's legal to supply neither Items nor ItemsProvider, because that's convenient when you're acquiring
+            // Items asynchronously but don't have it yet. In this case we just render zero items.
+            dataSourceHasChanged = _lastAssignedItemsOrProvider is not null;
         }
 
         var mustRefreshData = dataSourceHasChanged

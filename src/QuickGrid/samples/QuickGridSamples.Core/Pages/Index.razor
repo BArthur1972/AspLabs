@@ -22,7 +22,7 @@
     IQueryable<Country> items;
     string nameFilter = string.Empty;
 
-    IQueryable<Country> FilteredItems => items.Where(x => x.Name.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase));
+    IQueryable<Country> FilteredItems => items?.Where(x => x.Name.Contains(nameFilter, StringComparison.CurrentCultureIgnoreCase));
 
     protected override async Task OnInitializedAsync()
     {

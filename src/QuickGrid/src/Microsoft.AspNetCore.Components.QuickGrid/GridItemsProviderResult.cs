@@ -2,8 +2,8 @@ namespace Microsoft.AspNetCore.Components.QuickGrid;
 
 public struct GridItemsProviderResult<TGridItem>
 {
-    public ICollection<TGridItem> Items { get; }
-    public int TotalItemCount { get; }
+    public ICollection<TGridItem> Items { get; set; }
+    public int TotalItemCount { get; set; }
 
     public GridItemsProviderResult(ICollection<TGridItem> items, int totalItemCount)
     {

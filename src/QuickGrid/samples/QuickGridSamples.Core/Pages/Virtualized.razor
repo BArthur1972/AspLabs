@@ -22,8 +22,7 @@
         itemsProvider = async req =>
         {
             var sortBy = req.GetSortByProperties().SingleOrDefault();
-            var data = await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortBy.PropertyName, sortBy.Direction == SortDirection.Ascending, req.CancellationToken);
-            return GridItemsProviderResult.From(data.Items, data.TotalCount);
+            return await DataService.GetCountriesAsync(req.StartIndex, req.Count, sortBy.PropertyName, sortBy.Direction == SortDirection.Ascending, req.CancellationToken);
         };
     }
 }
