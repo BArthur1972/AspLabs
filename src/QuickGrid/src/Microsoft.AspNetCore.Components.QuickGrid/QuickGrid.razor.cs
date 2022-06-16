@@ -68,15 +68,13 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         {
             // This will call back into ProvideVirtualizedItems
             await _virtualizeComponent.RefreshDataAsync();
-            Pagination?.SetTotalItemCountAsync(_rowCount);
             _pendingDataLoadCancellationTokenSource = null;
         }
         else
         {
             var startIndex = Pagination is null ? 0 : (Pagination.CurrentPageIndex * Pagination.ItemsPerPage);
-            var count = Pagination?.ItemsPerPage;
             var request = new GridItemsProviderRequest<TGridItem>(
-                startIndex, count, _sortByColumn, _sortByAscending, thisLoadCts.Token);
+                startIndex, Pagination?.ItemsPerPage, _sortByColumn, _sortByAscending, thisLoadCts.Token);
             var result = await ResolveItemsRequestAsync(request);
             if (!thisLoadCts.IsCancellationRequested)
             {
@@ -109,12 +107,21 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
             return default;
         }
 
+        var startIndex = request.StartIndex;
+        var count = request.Count;
+        if (Pagination is not null)
+        {
+            startIndex += Pagination.CurrentPageIndex * Pagination.ItemsPerPage;
+            count = Math.Min(request.Count, Pagination.ItemsPerPage - request.StartIndex);
+        }
+
         var providerRequest = new GridItemsProviderRequest<TGridItem>(
-            request.StartIndex, request.Count, _sortByColumn, _sortByAscending, request.CancellationToken);
+            startIndex, count, _sortByColumn, _sortByAscending, request.CancellationToken);
         var providerResult = await ResolveItemsRequestAsync(providerRequest);
         if (!request.CancellationToken.IsCancellationRequested)
         {
-            _rowCount = providerResult.TotalItemCount;
+            _rowCount = Pagination is null ? providerResult.TotalItemCount : Pagination.ItemsPerPage;
+            Pagination?.SetTotalItemCountAsync(providerResult.TotalItemCount);
             return new ItemsProviderResult<(int, TGridItem)>(
                  items: providerResult.Items.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
                  totalItemCount: _rowCount);
