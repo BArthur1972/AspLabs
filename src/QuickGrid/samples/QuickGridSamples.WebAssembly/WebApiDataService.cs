@@ -16,6 +16,8 @@ internal class WebApiDataService : IDataService
         _navigationManager = navigationManager;
     }
 
+    public IQueryable<Country> Countries => throw new NotImplementedException();
+
     public async Task<GridItemsProviderResult<Country>> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
         var url = _navigationManager.GetUriWithQueryParameters("/api/countries", new Dictionary<string, object>

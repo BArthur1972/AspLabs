@@ -13,10 +13,7 @@ public class LocalDataService : IDataService
         _dbContext = dbContext;
     }
 
-    public Task<IQueryable<Country>> GetCountriesAsync()
-    {
-        return Task.FromResult(_dbContext.Countries.AsQueryable());
-    }
+    public IQueryable<Country> Countries => _dbContext.Countries;
 
     public async Task<GridItemsProviderResult<Country>> GetCountriesAsync(int startIndex, int? count, string sortBy, bool sortAscending, CancellationToken cancellationToken)
     {
