@@ -26,7 +26,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
     private ColumnBase<TGridItem>? _displayOptionsForColumn;
     private bool _checkColumnOptionsPosition;
     private bool _sortByAscending;
-    private int _rowCount;
+    private int _ariaBodyRowCount;
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _jsEventDisposable;
     private ElementReference _tableReference;
@@ -80,7 +80,7 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
             {
                 // See below
                 _currentNonVirtualizedViewItems = result.Items;
-                _rowCount = result.TotalItemCount; // TODO: Need to distinguish "total row count" from "rows currently being rendered (when paginated)" as ARIA wants the former when virtualized and latter when not
+                _ariaBodyRowCount = _currentNonVirtualizedViewItems.Count;
                 Pagination?.SetTotalItemCountAsync(result.TotalItemCount);
                 _pendingDataLoadCancellationTokenSource = null;
             }
@@ -120,11 +120,22 @@ public partial class QuickGrid<TGridItem> : IAsyncDisposable
         var providerResult = await ResolveItemsRequestAsync(providerRequest);
         if (!request.CancellationToken.IsCancellationRequested)
         {
-            _rowCount = Pagination is null ? providerResult.TotalItemCount : Pagination.ItemsPerPage;
+            // This method gets called directly by the Virtualize child, and doesn't implicitly re-render the QuickGrid component
+            // So, if during this process we discover that something about the data has changed, we may have to cause the QuickGrid
+            // container to re-render manually. Note that the logic for calculating the body row count when paging and virtualizing
+            // together may need to be changed to be (TotalItemCount % ItemsPerPage) when on the last page.
+            var newBodyRowCount = Pagination is null ? providerResult.TotalItemCount : Pagination.ItemsPerPage;
+            var bodyRowCountChanged = newBodyRowCount != _ariaBodyRowCount;
+            _ariaBodyRowCount = newBodyRowCount;
+            if (bodyRowCountChanged)
+            {
+                _ = StateHasChangedDeferredAsync(); // Not expected to throw
+            }
+
             Pagination?.SetTotalItemCountAsync(providerResult.TotalItemCount);
             return new ItemsProviderResult<(int, TGridItem)>(
                  items: providerResult.Items.Select((x, i) => ValueTuple.Create(i + request.StartIndex + 2, x)),
-                 totalItemCount: _rowCount);
+                 totalItemCount: _ariaBodyRowCount);
         }
 
         return default;
