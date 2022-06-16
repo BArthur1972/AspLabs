@@ -6,7 +6,7 @@
         <TemplateColumn Title="Code"><img class="flag" src="flags/@(context.Code).svg" /></TemplateColumn>
         <PropertyColumn Property="@(c => c.Name)" Sortable="true">
             <ColumnOptions>
-                <input type="search" @bind="nameFilter" @bind:event="oninput" />
+                <input type="search" autofocus @bind="nameFilter" @bind:event="oninput" />
             </ColumnOptions>
         </PropertyColumn>
         <PropertyColumn Property="@(c => c.Medals.Gold)" Sortable="true" Align="Align.Right" />

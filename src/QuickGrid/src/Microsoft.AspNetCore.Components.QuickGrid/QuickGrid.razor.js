@@ -29,8 +29,15 @@ export function init(elem) {
 
 export function checkColumnOptionsPosition(elem) {
     const colOptions = elem.querySelector('.col-options');
-    if (colOptions && colOptions.offsetLeft < 0) {
-        colOptions.style.transform = `translateX(${ -1 * colOptions.offsetLeft }px)`;
+    if (colOptions) {
+        if (colOptions.offsetLeft < 0) {
+            colOptions.style.transform = `translateX(${-1 * colOptions.offsetLeft}px)`;
+        }
+
+        const autoFocusElem = colOptions.querySelector('[autofocus]');
+        if (autoFocusElem) {
+            autoFocusElem.focus();
+        }
     }
 }
 
