@@ -39,6 +39,9 @@ internal static class AsyncQueryExecutorSupplier
         return null;
     }
 
+    // We have to do this via reflection because the whole point is to avoid any static dependency on EF unless you
+    // reference the adapter. Trimming won't cause us any problems because this is only a way of detecting misconfiguration
+    // so it's sufficient if it can detect the misconfiguration in development.
     private static bool IsEntityFrameworkQueryable<T>(IQueryable<T> queryable)
         => queryable.Provider?.GetType().GetInterfaces().Any(x => string.Equals(x.FullName, "Microsoft.EntityFrameworkCore.Query.IAsyncQueryProvider")) == true;
 }
