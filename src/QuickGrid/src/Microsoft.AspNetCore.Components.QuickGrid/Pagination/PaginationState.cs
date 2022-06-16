@@ -30,6 +30,17 @@ public class PaginationState
     internal Task SetTotalItemCountAsync(int totalItemCount)
     {
         TotalItemCount = totalItemCount;
-        return TotalItemCountChanged.InvokeCallbacksAsync(this);
+
+        if (CurrentPageIndex > 0 && CurrentPageIndex > LastPageIndex)
+        {
+            // If the number of items has reduced such that the current page index is no longer valid, move
+            // automatically to the final valid page index and trigger a further data load.
+            return SetCurrentPageIndexAsync(LastPageIndex.Value);
+        }
+        else
+        {
+            // Under normal circumstances, we just want any associated pagination UI to update
+            return TotalItemCountChanged.InvokeCallbacksAsync(this);
+        }
     }
 }
